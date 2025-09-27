@@ -10,6 +10,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/rs/zerolog v1.34.0
 	go.jetify.com/typeid/v2 v2.0.0-alpha.3
+	golang.org/x/crypto v0.42.0
 )
 
 require (
@@ -27,7 +28,7 @@ require (
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/zclconf/go-cty v1.14.4 // indirect
 	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
-	golang.org/x/mod v0.23.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/mod v0.27.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 )
