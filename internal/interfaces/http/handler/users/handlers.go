@@ -12,6 +12,7 @@ import (
 	"github.com/jorge-j1m/hackspark_server/ent/user"
 	"github.com/jorge-j1m/hackspark_server/ent/usertechnology"
 	log "github.com/jorge-j1m/hackspark_server/internal/infrastructure/logger"
+	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/middleware"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/response"
 	"github.com/jorge-j1m/hackspark_server/internal/pkg/common/errors"
 )
@@ -118,7 +119,12 @@ func (r AddTechnologyRequest) Validate() error {
 
 func (u *UsersHandler) AddUserTechnology(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userID := ctx.Value("user_id").(string)
+	userID, err := middleware.GetUserIDFromContext(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user ID from context")
+		response.Error(w, errors.ErrUserNotFound)
+		return
+	}
 
 	var req AddTechnologyRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -266,7 +272,12 @@ func (r UpdateTechnologyRequest) Validate() error {
 
 func (u *UsersHandler) UpdateUserTechnology(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userID := ctx.Value("user_id").(string)
+	userID, err := middleware.GetUserIDFromContext(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user ID from context")
+		response.Error(w, errors.ErrUserNotFound)
+		return
+	}
 	tagSlug := chi.URLParam(r, "slug")
 
 	var req UpdateTechnologyRequest
@@ -331,7 +342,12 @@ func (u *UsersHandler) UpdateUserTechnology(w http.ResponseWriter, r *http.Reque
 
 func (u *UsersHandler) RemoveUserTechnology(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userID := ctx.Value("user_id").(string)
+	userID, err := middleware.GetUserIDFromContext(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user ID from context")
+		response.Error(w, errors.ErrUserNotFound)
+		return
+	}
 	tagSlug := chi.URLParam(r, "slug")
 
 	tag, err := u.client.Tag.Query().Where(tag.Slug(tagSlug)).First(ctx)

@@ -31,7 +31,7 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		user, err := m.getUserFromRequest(ctx, r)
+		user, err := m.GetUserFromRequest(ctx, r)
 		if err != nil {
 			log.Debug(ctx).Err(err).Msg("Failed to get user from request")
 			response.Error(w, errors.ErrUserNotFound)
@@ -44,7 +44,7 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 	})
 }
 
-func (m *AuthMiddleware) getUserFromRequest(ctx context.Context, r *http.Request) (*ent.User, error) {
+func (m *AuthMiddleware) GetUserFromRequest(ctx context.Context, r *http.Request) (*ent.User, error) {
 	// Extract the session ID from the header
 	sessionID, err := GetSessionFromHeaders(ctx, r.Header)
 	if err != nil {
@@ -97,6 +97,15 @@ func GetSessionFromHeaders(ctx context.Context, h http.Header) (string, error) {
 	return sessionId.String(), nil
 }
 
+// GetUserIDFromContext extracts the user ID from the authenticated request context
+func GetUserIDFromContext(ctx context.Context) (string, error) {
+	user, ok := ctx.Value(log.UserCtxKey).(*ent.User)
+	if !ok || user == nil {
+		return "", errors.ErrUserNotFound
+	}
+	return user.ID, nil
+}
+
 // getUserFromSession
 func (m *AuthMiddleware) getUserFromSession(ctx context.Context, sessionID string) (*ent.User, error) {
 	// Query the session by its ID, ensuring it has not expired.
@@ -117,7 +126,7 @@ func (m *AuthMiddleware) OptionalAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		user, err := m.getUserFromRequest(ctx, r)
+		user, err := m.GetUserFromRequest(ctx, r)
 		if err != nil {
 			log.Debug(ctx).Err(err).Msg("Failed to get user from request")
 			next.ServeHTTP(w, r)

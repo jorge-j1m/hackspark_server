@@ -15,6 +15,7 @@ import (
 	"github.com/jorge-j1m/hackspark_server/ent/tag"
 	"github.com/jorge-j1m/hackspark_server/ent/user"
 	log "github.com/jorge-j1m/hackspark_server/internal/infrastructure/logger"
+	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/middleware"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/response"
 	"github.com/jorge-j1m/hackspark_server/internal/pkg/common/errors"
 )
@@ -74,7 +75,12 @@ type ProjectResponse struct {
 
 func (h *ProjectsHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userID := ctx.Value("user_id").(string)
+	userID, err := middleware.GetUserIDFromContext(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user ID from context")
+		response.Error(w, errors.ErrUserNotFound)
+		return
+	}
 
 	var req CreateProjectRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -145,7 +151,12 @@ func (h *ProjectsHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 func (h *ProjectsHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	projectID := chi.URLParam(r, "id")
-	userID := ctx.Value("user_id").(string)
+	userID, err := middleware.GetUserIDFromContext(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user ID from context")
+		response.Error(w, errors.ErrUserNotFound)
+		return
+	}
 
 	var req UpdateProjectRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -218,7 +229,12 @@ func (h *ProjectsHandler) UpdateProject(w http.ResponseWriter, r *http.Request) 
 func (h *ProjectsHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	projectID := chi.URLParam(r, "id")
-	userID := ctx.Value("user_id").(string)
+	userID, err := middleware.GetUserIDFromContext(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user ID from context")
+		response.Error(w, errors.ErrUserNotFound)
+		return
+	}
 
 	project, err := h.client.Project.Query().
 		Where(project.ID(projectID)).
@@ -402,9 +418,14 @@ func (h *ProjectsHandler) normalizeSlug(input string) string {
 func (h *ProjectsHandler) LikeProject(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	projectID := chi.URLParam(r, "id")
-	userID := ctx.Value("user_id").(string)
+	userID, err := middleware.GetUserIDFromContext(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user ID from context")
+		response.Error(w, errors.ErrUserNotFound)
+		return
+	}
 
-	_, err := h.client.Project.Query().
+	_, err = h.client.Project.Query().
 		Where(project.ID(projectID)).
 		First(ctx)
 	if err != nil {
@@ -455,7 +476,12 @@ func (h *ProjectsHandler) LikeProject(w http.ResponseWriter, r *http.Request) {
 func (h *ProjectsHandler) UnlikeProject(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	projectID := chi.URLParam(r, "id")
-	userID := ctx.Value("user_id").(string)
+	userID, err := middleware.GetUserIDFromContext(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user ID from context")
+		response.Error(w, errors.ErrUserNotFound)
+		return
+	}
 
 	existingLike, err := h.client.Like.Query().
 		Where(like.UserID(userID), like.ProjectID(projectID)).
@@ -530,7 +556,12 @@ func (h *ProjectsHandler) GetProjectLikes(w http.ResponseWriter, r *http.Request
 func (h *ProjectsHandler) CheckProjectLiked(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	projectID := chi.URLParam(r, "id")
-	userID := ctx.Value("user_id").(string)
+	userID, err := middleware.GetUserIDFromContext(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user ID from context")
+		response.Error(w, errors.ErrUserNotFound)
+		return
+	}
 
 	existingLike, err := h.client.Like.Query().
 		Where(like.UserID(userID), like.ProjectID(projectID)).
