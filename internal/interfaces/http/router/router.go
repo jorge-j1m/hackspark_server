@@ -69,10 +69,12 @@ func New(cfg *config.Config, client *ent.Client) http.Handler {
 			r.Route("/users", func(r chi.Router) {
 				r.Get("/{username}", usersHandler.GetUserProfile)
 				r.Get("/{username}/technologies", usersHandler.GetUserTechnologies)
+				r.Get("/{username}/projects", usersHandler.GetUserProjects)
 
 				r.Group(func(r chi.Router) {
 					r.Use(authMiddleware.Authenticate)
 					r.Get("/me", usersHandler.Me)
+					// r.Get("/me/dashboard", usersHandler.GetMyDashboard)
 					r.Post("/technologies", usersHandler.AddUserTechnology)
 					r.Put("/technologies/{slug}", usersHandler.UpdateUserTechnology)
 					r.Delete("/technologies/{slug}", usersHandler.RemoveUserTechnology)

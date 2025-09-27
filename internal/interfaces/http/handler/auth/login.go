@@ -8,6 +8,7 @@ import (
 	"github.com/jorge-j1m/hackspark_server/ent"
 	user_ent "github.com/jorge-j1m/hackspark_server/ent/user"
 	log "github.com/jorge-j1m/hackspark_server/internal/infrastructure/logger"
+	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler/users"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/response"
 	"github.com/jorge-j1m/hackspark_server/internal/pkg/common/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -38,12 +39,8 @@ func (l LoginRequest) Validate() error {
 }
 
 type LoginSuccessData struct {
-	Id        string `json:"id"`        // User ID
+	users.CreatedUser
 	SessionID string `json:"sessionId"` // Session ID
-	Email     string `json:"email"`     // User Email
-	FirstName string `json:"firstName"` // User First Name
-	LastName  string `json:"lastName"`  // User Last Name
-	Username  string `json:"username"`  // User Username
 }
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
@@ -109,11 +106,15 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	log.Info(ctx).Msgf("User logged in successfully: %s", user.Email)
 	response.JSON(w, http.StatusOK, "User logged in successfully", LoginSuccessData{
-		Id:        user.ID,
+		CreatedUser: users.CreatedUser{
+			UserData: users.UserData{
+				FirstName: user.FirstName,
+				LastName:  user.LastName,
+				Username:  user.Username,
+				Email:     user.Email,
+			},
+			Id: user.ID,
+		},
 		SessionID: session.ID,
-		Email:     user.Email,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Username:  user.Username,
 	})
 }

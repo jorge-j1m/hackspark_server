@@ -5,16 +5,14 @@ import (
 	"net/http"
 
 	log "github.com/jorge-j1m/hackspark_server/internal/infrastructure/logger"
+	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler/users"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/response"
 	"github.com/jorge-j1m/hackspark_server/internal/pkg/common/errors"
 )
 
 type SignUpRequest struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Username  string `json:"username"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
+	users.UserData
+	Password string `json:"password"`
 }
 
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
@@ -39,9 +37,13 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Info(r.Context()).Msgf("User created successfully: %s", user.ID)
-	response.JSON(w, http.StatusCreated, "User created successfully", map[string]interface{}{
-		"id":    user.ID,
-		"email": user.Email,
-		"name":  user.FirstName + " " + user.LastName,
+	response.JSON(w, http.StatusCreated, "User created successfully", users.CreatedUser{
+		UserData: users.UserData{
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			Username:  user.Username,
+			Email:     user.Email,
+		},
+		Id: user.ID,
 	})
 }
