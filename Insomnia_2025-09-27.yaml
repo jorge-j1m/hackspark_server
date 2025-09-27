@@ -1,0 +1,990 @@
+type: collection.insomnia.rest/5.0
+name: HackSpark API
+meta:
+  id: wrk_aaec40fb003548bd82a3089bc7723a55
+  created: 1758992737759
+  modified: 1758994837973
+  description: ""
+collection:
+  - name: Auth
+    meta:
+      id: fld_85ac62e08371479696b6d73a788d8652
+      created: 1758951334064
+      modified: 1758993267451
+      sortKey: -1000000000
+      description: Authentication endpoints
+    children:
+      - url: "{{host_url}}/api/v1/auth/signup"
+        name: Sign Up
+        meta:
+          id: req_f9432a0cf4b44fa9a7ebc520c5834b16
+          created: 1758951334066
+          modified: 1758993013814
+          isPrivate: false
+          description: ""
+          sortKey: -1757626212791
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"firstName": "Jorge",
+            	"lastName": "Test",
+            	"username": "jorgetest1",
+            	"email": "jorge1@email.com",
+            	"password": "password123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        scripts:
+          afterResponse: |+
+            
+            const jsonBody = insomnia.response.json();
+
+
+            insomnia.environment.set("username", jsonBody.);
+
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/auth/login"
+        name: Log In
+        meta:
+          id: req_14086c89a5bd466a8b167439dcde5447
+          created: 1758951334067
+          modified: 1758993210986
+          isPrivate: false
+          description: ""
+          sortKey: -1757625975182
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"email": "jorge-test7@email.com",
+            	"password": "password123",
+            	"remember": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        scripts:
+          afterResponse: |+
+            const jsonBody = insomnia.response.json();
+
+            if (jsonBody.success) {
+            	insomnia.environment.set("username", jsonBody.data.username);
+            	insomnia.environment.set("auth_token", jsonBody.data.sessionId);
+            }
+
+
+
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/auth/logout"
+        name: Log Out
+        meta:
+          id: req_185f56f256c04df28c2df76017d7876b
+          created: 1758951334067
+          modified: 1758951425967
+          isPrivate: false
+          description: ""
+          sortKey: -1757625856377.5
+        method: POST
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Users
+    meta:
+      id: fld_e683816854a24220879dc6b36ca53d5a
+      created: 1758951334070
+      modified: 1758993259287
+      sortKey: -900000000
+      description: User profiles and management
+    children:
+      - url: "{{host_url}}/api/v1/users/{{username}}"
+        name: Get User Profile
+        meta:
+          id: req_e9a77d23c9594c5c96a9a173a35b2500
+          created: 1758951334071
+          modified: 1758951334071
+          isPrivate: false
+          description: Get user profile with technologies and project count
+          sortKey: -1757625000000
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/users/profile"
+        name: Update My Profile
+        meta:
+          id: req_45233502de464089b21ec91fd3382a9d
+          created: 1758951334072
+          modified: 1758993339533
+          isPrivate: false
+          description: Update current user's profile
+          sortKey: -1757624900000
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"bio": "Full-stack developer passionate about React and Go",
+            	"avatar_url": "https://example.com/avatar.jpg"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/users/{{username}}/projects"
+        name: Get User's Projects
+        meta:
+          id: req_3dc77e23f6824714897932d4d7eadd28
+          created: 1758951334073
+          modified: 1758951334073
+          isPrivate: false
+          description: Get user's owned projects (paginated)
+          sortKey: -1757624800000
+        method: GET
+        parameters:
+          - name: limit
+            value: "20"
+          - name: offset
+            value: "0"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/users/{{username}}/likes"
+        name: Get User's Liked Projects
+        meta:
+          id: req_a8d161ae25644b2195e5e7afdaa2831a
+          created: 1758951334074
+          modified: 1758951334074
+          isPrivate: false
+          description: Get projects user has liked (paginated)
+          sortKey: -1757624700000
+        method: GET
+        parameters:
+          - name: limit
+            value: "20"
+          - name: offset
+            value: "0"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    authentication:
+      type: bearer
+      token: "{{auth_token}}"
+  - name: User Technologies
+    meta:
+      id: fld_7c60511545f5454c8c01b6da134a2f12
+      created: 1758951334080
+      modified: 1758951334080
+      sortKey: -850000000
+      description: Manage user's known technologies
+    children:
+      - url: "{{host_url}}/api/v1/users/{{username}}/technologies"
+        name: Get User Technologies
+        meta:
+          id: req_0535ec6b6f464cef8f055168dd7811f0
+          created: 1758951334081
+          modified: 1758951334081
+          isPrivate: false
+          description: List user's technologies with skill levels
+          sortKey: -1757624000000
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/users/technologies"
+        name: Add Technology
+        meta:
+          id: req_cf4512557d64426db104c4b5901bb535
+          created: 1758951334082
+          modified: 1758951334082
+          isPrivate: false
+          description: Add technology to current user's profile
+          sortKey: -1757623900000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"tag_slug": "react",
+            	"skill_level": "expert",
+            	"years_experience": 5,
+            	"is_primary": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/users/technologies/{{tag_slug}}"
+        name: Update Technology Skill
+        meta:
+          id: req_6822b623207947f9884829e349286f6f
+          created: 1758951334083
+          modified: 1758951334083
+          isPrivate: false
+          description: Update skill level/experience
+          sortKey: -1757623800000
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"skill_level": "expert",
+            	"years_experience": 6,
+            	"is_primary": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/users/technologies/{{tag_slug}}"
+        name: Remove Technology
+        meta:
+          id: req_9ed972f1b60c4ef38e312c9cfbf063d7
+          created: 1758951334084
+          modified: 1758951334084
+          isPrivate: false
+          description: Remove technology from profile
+          sortKey: -1757623700000
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Projects
+    meta:
+      id: fld_704640b17f68400f8275affca2119ff4
+      created: 1758951334090
+      modified: 1758994624588
+      sortKey: -800000000
+      description: Project CRUD operations
+    children:
+      - url: "{{host_url}}/api/v1/projects"
+        name: List Projects
+        meta:
+          id: req_190f74e274254f2b9fe131204b634517
+          created: 1758951334091
+          modified: 1758994619548
+          isPrivate: false
+          description: List all public projects with filters
+          sortKey: -1757623000000
+        method: GET
+        parameters:
+          - name: tags
+            value: react,typescript
+            disabled: true
+          - name: tags_any
+            value: golang,python
+            disabled: true
+          - name: liked_by
+            value: "{{username}}"
+            disabled: true
+          - name: owner
+            value: "{{username}}"
+            disabled: true
+          - name: sort
+            value: likes
+            disabled: true
+          - name: limit
+            value: "20"
+          - name: offset
+            value: "0"
+        scripts:
+          afterResponse: |
+            const jsonBody = insomnia.response.json();
+
+            if (jsonBody.success) {
+            	insomnia.environment.set("project_id", jsonBody.data[0].id);
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/projects"
+        name: Create Project
+        meta:
+          id: req_d4e360e3530b4988b7b4b6d9d128e6c6
+          created: 1758951334092
+          modified: 1758994597962
+          isPrivate: false
+          description: Create new project
+          sortKey: -1757622900000
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+            	"name": "Awesome React App",
+            	"description": "A modern web application built with React and TypeScript",
+            	"is_public": true,
+            	"tags": ["react", "typescript", "tailwindcss", "nextjs"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        scripts:
+          afterResponse: |
+            const jsonBody = insomnia.response.json();
+
+            if (jsonBody.success) {
+            	insomnia.environment.set("project_id", jsonBody.data.id);
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}"
+        name: Get Project Details
+        meta:
+          id: req_3370c2b970854f1baccdfcbfdd328a2b
+          created: 1758951334093
+          modified: 1758951334093
+          isPrivate: false
+          description: Get project details with tags and like count
+          sortKey: -1757622800000
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}"
+        name: Update Project
+        meta:
+          id: req_6c963c70783545978b563037f94a40be
+          created: 1758951334094
+          modified: 1758951334094
+          isPrivate: false
+          description: Update project (owner only)
+          sortKey: -1757622700000
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "Updated Project Name",
+            	"description": "Updated description with more details",
+            	"is_public": true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}"
+        name: Delete Project
+        meta:
+          id: req_6e1078b893b748cb8f893633b7b4c9e3
+          created: 1758951334095
+          modified: 1758951334095
+          isPrivate: false
+          description: Delete project (owner only)
+          sortKey: -1757622600000
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Project Tags
+    meta:
+      id: fld_653da87ef22f41d7b353643ce30369a9
+      created: 1758951334100
+      modified: 1758951334100
+      sortKey: -750000000
+      description: Manage project tags
+    children:
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}/tags"
+        name: Get Project Tags
+        meta:
+          id: req_0291c9078eda493d912383924c105920
+          created: 1758951334101
+          modified: 1758951334101
+          isPrivate: false
+          description: Get all tags for a project
+          sortKey: -1757622000000
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}/tags"
+        name: Replace Project Tags
+        meta:
+          id: req_649fd7354bd64236b6d1aad901fe5706
+          created: 1758951334102
+          modified: 1758951334102
+          isPrivate: false
+          description: Replace all project tags (owner only)
+          sortKey: -1757621900000
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"tags": ["react", "typescript", "graphql", "prisma"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}/tags"
+        name: Add Project Tags
+        meta:
+          id: req_c76ba84fe69d4b98a94e6eb993e278e9
+          created: 1758951334103
+          modified: 1758951334103
+          isPrivate: false
+          description: Add tags to project (owner only)
+          sortKey: -1757621800000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"tags": ["docker", "kubernetes"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}/tags/{{tag_slug}}"
+        name: Remove Project Tag
+        meta:
+          id: req_329b6d1f000d418f9fbf0500081d66c9
+          created: 1758951334104
+          modified: 1758951334104
+          isPrivate: false
+          description: Remove specific tag (owner only)
+          sortKey: -1757621700000
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Likes
+    meta:
+      id: fld_18a1b0b6d19c4629a644c924dff7c3cd
+      created: 1758951334110
+      modified: 1758951334110
+      sortKey: -700000000
+      description: Like/unlike projects
+    children:
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}/like"
+        name: Like Project
+        meta:
+          id: req_72cfc9e0983b40cab307d0f889bf27c7
+          created: 1758951334111
+          modified: 1758951334111
+          isPrivate: false
+          description: Like a project (idempotent)
+          sortKey: -1757621000000
+        method: POST
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}/like"
+        name: Unlike Project
+        meta:
+          id: req_5d98f322c4f245cd8444f7d25c448ddf
+          created: 1758951334112
+          modified: 1758951334112
+          isPrivate: false
+          description: Unlike a project
+          sortKey: -1757620900000
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}/likes"
+        name: Get Project Likes
+        meta:
+          id: req_e044aa5aada946abaee7e5c1182dea69
+          created: 1758951334113
+          modified: 1758951334113
+          isPrivate: false
+          description: Get users who liked this project (paginated)
+          sortKey: -1757620800000
+        method: GET
+        parameters:
+          - name: limit
+            value: "20"
+          - name: offset
+            value: "0"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/projects/{{project_id}}/liked"
+        name: Check If Liked
+        meta:
+          id: req_ab54434cfee4478b9933924b22f108ff
+          created: 1758951334114
+          modified: 1758951334114
+          isPrivate: false
+          description: Check if current user liked this project
+          sortKey: -1757620700000
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Tags
+    meta:
+      id: fld_abf41d443dba4415b0e5a601971b162d
+      created: 1758951334120
+      modified: 1758951334120
+      sortKey: -650000000
+      description: Tag discovery and management
+    children:
+      - url: "{{host_url}}/api/v1/tags"
+        name: List Tags
+        meta:
+          id: req_22db2eb422a84fc78e202a395022a785
+          created: 1758951334121
+          modified: 1758951334121
+          isPrivate: false
+          description: List all tags with filters
+          sortKey: -1757620000000
+        method: GET
+        parameters:
+          - name: search
+            value: react
+            disabled: true
+          - name: sort
+            value: popular
+            disabled: true
+          - name: category
+            value: framework
+            disabled: true
+          - name: limit
+            value: "20"
+          - name: offset
+            value: "0"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/tags/{{tag_slug}}"
+        name: Get Tag Details
+        meta:
+          id: req_f6c71c16a2cb4e1d9b485b95b3ff779c
+          created: 1758951334122
+          modified: 1758951334122
+          isPrivate: false
+          description: Get tag details with usage statistics
+          sortKey: -1757619900000
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/tags/{{tag_slug}}/projects"
+        name: Get Projects by Tag
+        meta:
+          id: req_0876f730d2624128b93bf14c17bb407c
+          created: 1758951334123
+          modified: 1758951334123
+          isPrivate: false
+          description: Get projects using this tag (paginated)
+          sortKey: -1757619800000
+        method: GET
+        parameters:
+          - name: limit
+            value: "20"
+          - name: offset
+            value: "0"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/tags/{{tag_slug}}/users"
+        name: Get Users by Technology
+        meta:
+          id: req_c6412627bd17465f8a3d9e6035ed2bfe
+          created: 1758951334124
+          modified: 1758951334124
+          isPrivate: false
+          description: Get users who know this technology (paginated)
+          sortKey: -1757619700000
+        method: GET
+        parameters:
+          - name: limit
+            value: "20"
+          - name: offset
+            value: "0"
+          - name: skill_level
+            value: expert
+            disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/tags/trending"
+        name: Get Trending Tags
+        meta:
+          id: req_4efde76e69fb4f31af14c149e892edd7
+          created: 1758951334125
+          modified: 1758951334125
+          isPrivate: false
+          description: Get trending tags based on recent usage
+          sortKey: -1757619600000
+        method: GET
+        parameters:
+          - name: limit
+            value: "10"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/tags/suggested"
+        name: Get Suggested Tags
+        meta:
+          id: req_d3597d599bab44a3af185a1c3443c34b
+          created: 1758951334126
+          modified: 1758951334126
+          isPrivate: false
+          description: Get suggested tags for current user
+          sortKey: -1757619500000
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Discovery
+    meta:
+      id: fld_620a2dfd7e294cd0a3c67c3bb3739c7e
+      created: 1758951334130
+      modified: 1758951334130
+      sortKey: -600000000
+      description: Discovery and recommendation endpoints
+    children:
+      - url: "{{host_url}}/api/v1/discover/projects"
+        name: Discover Projects
+        meta:
+          id: req_7d7b82b7152542588d059f1ff5212961
+          created: 1758951334131
+          modified: 1758951334131
+          isPrivate: false
+          description: Get projects based on user's technologies
+          sortKey: -1757619000000
+        method: GET
+        parameters:
+          - name: limit
+            value: "20"
+          - name: offset
+            value: "0"
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/discover/users/similar"
+        name: Find Similar Users
+        meta:
+          id: req_f1e8ccdc896d4a089adf7eef57091930
+          created: 1758951334132
+          modified: 1758951334132
+          isPrivate: false
+          description: Find users with similar technology stack
+          sortKey: -1757618900000
+        method: GET
+        parameters:
+          - name: limit
+            value: "20"
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/discover/collaborators/{{project_id}}"
+        name: Find Collaborators
+        meta:
+          id: req_c39571b718704d33b352b8a4bd1f12d1
+          created: 1758951334133
+          modified: 1758951334133
+          isPrivate: false
+          description: Find potential collaborators for a project
+          sortKey: -1757618800000
+        method: GET
+        parameters:
+          - name: limit
+            value: "10"
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{host_url}}/api/v1/feed"
+        name: Get Personalized Feed
+        meta:
+          id: req_6c45ffe507d74ad59563fc537b285fd1
+          created: 1758951334134
+          modified: 1758951334134
+          isPrivate: false
+          description: Personalized feed based on technologies and activity
+          sortKey: -1757618700000
+        method: GET
+        parameters:
+          - name: limit
+            value: "20"
+          - name: offset
+            value: "0"
+        authentication:
+          type: bearer
+          token: "{{auth_token}}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - url: "{{host_url}}/health"
+    name: Health Check
+    meta:
+      id: req_1b1c9cbc9ddb420a8eb9eec525196652
+      created: 1757016929611
+      modified: 1757017084670
+      isPrivate: false
+      description: API health check
+      sortKey: -500000000
+    method: GET
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_66854a04f0414dfaa7e16d152e2c6f22
+    created: 1757016895994
+    modified: 1758994624584
+environments:
+  name: Dev Environment
+  meta:
+    id: env_ac301bcd3b6f419e94dfbb1453cd1b38
+    created: 1757016895993
+    modified: 1758994624587
+    isPrivate: false
+  data:
+    host_url: http://127.0.0.1:8080
+    auth_token: sess_01k662pecdew2vpdw4wnr8m2n4
+    username: jorgejimenez7
+    project_id: proj_01k663x7qgey8sbm29mvx3p93d
+    tag_slug: react
