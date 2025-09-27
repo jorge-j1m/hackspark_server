@@ -3,9 +3,11 @@ module github.com/jorge-j1m/hackspark_server
 go 1.25.1
 
 require (
+	entgo.io/ent v0.14.5
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-chi/cors v1.2.2
 	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.10.9
 	github.com/rs/zerolog v1.34.0
 )
 

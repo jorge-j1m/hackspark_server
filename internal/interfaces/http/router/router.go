@@ -8,12 +8,13 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
+	"github.com/jorge-j1m/hackspark_server/ent"
 	"github.com/jorge-j1m/hackspark_server/internal/infrastructure/config"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler"
 )
 
 // New creates a new router with all routes and middleware
-func New(cfg *config.Config) http.Handler {
+func New(cfg *config.Config, client *ent.Client) http.Handler {
 	r := chi.NewRouter()
 
 	// Basic middleware
