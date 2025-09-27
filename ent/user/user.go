@@ -3,7 +3,12 @@
 package user
 
 import (
+	"fmt"
+	"time"
+
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -11,13 +16,67 @@ const (
 	Label = "user"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCreateTime holds the string denoting the create_time field in the database.
+	FieldCreateTime = "create_time"
+	// FieldUpdateTime holds the string denoting the update_time field in the database.
+	FieldUpdateTime = "update_time"
+	// FieldUsername holds the string denoting the username field in the database.
+	FieldUsername = "username"
+	// FieldEmail holds the string denoting the email field in the database.
+	FieldEmail = "email"
+	// FieldEmailVerified holds the string denoting the email_verified field in the database.
+	FieldEmailVerified = "email_verified"
+	// FieldPassword holds the string denoting the password field in the database.
+	FieldPassword = "password"
+	// FieldFirstName holds the string denoting the first_name field in the database.
+	FieldFirstName = "first_name"
+	// FieldLastName holds the string denoting the last_name field in the database.
+	FieldLastName = "last_name"
+	// FieldLastLoginAt holds the string denoting the last_login_at field in the database.
+	FieldLastLoginAt = "last_login_at"
+	// FieldAccountStatus holds the string denoting the account_status field in the database.
+	FieldAccountStatus = "account_status"
+	// FieldVerificationToken holds the string denoting the verification_token field in the database.
+	FieldVerificationToken = "verification_token"
+	// FieldVerificationTokenExpiryAt holds the string denoting the verification_token_expiry_at field in the database.
+	FieldVerificationTokenExpiryAt = "verification_token_expiry_at"
+	// FieldFailedLoginAttempts holds the string denoting the failed_login_attempts field in the database.
+	FieldFailedLoginAttempts = "failed_login_attempts"
+	// FieldResetPasswordToken holds the string denoting the reset_password_token field in the database.
+	FieldResetPasswordToken = "reset_password_token"
+	// FieldResetPasswordTokenExpiryAt holds the string denoting the reset_password_token_expiry_at field in the database.
+	FieldResetPasswordTokenExpiryAt = "reset_password_token_expiry_at"
+	// EdgeSessions holds the string denoting the sessions edge name in mutations.
+	EdgeSessions = "sessions"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// SessionsTable is the table that holds the sessions relation/edge.
+	SessionsTable = "sessions"
+	// SessionsInverseTable is the table name for the Session entity.
+	// It exists in this package in order to avoid circular dependency with the "session" package.
+	SessionsInverseTable = "sessions"
+	// SessionsColumn is the table column denoting the sessions relation/edge.
+	SessionsColumn = "user_sessions"
 )
 
 // Columns holds all SQL columns for user fields.
 var Columns = []string{
 	FieldID,
+	FieldCreateTime,
+	FieldUpdateTime,
+	FieldUsername,
+	FieldEmail,
+	FieldEmailVerified,
+	FieldPassword,
+	FieldFirstName,
+	FieldLastName,
+	FieldLastLoginAt,
+	FieldAccountStatus,
+	FieldVerificationToken,
+	FieldVerificationTokenExpiryAt,
+	FieldFailedLoginAttempts,
+	FieldResetPasswordToken,
+	FieldResetPasswordTokenExpiryAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -30,10 +89,166 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "github.com/jorge-j1m/hackspark_server/ent/runtime"
+var (
+	Hooks [1]ent.Hook
+	// DefaultCreateTime holds the default value on creation for the "create_time" field.
+	DefaultCreateTime func() time.Time
+	// DefaultUpdateTime holds the default value on creation for the "update_time" field.
+	DefaultUpdateTime func() time.Time
+	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
+	UpdateDefaultUpdateTime func() time.Time
+	// UsernameValidator is a validator for the "username" field. It is called by the builders before save.
+	UsernameValidator func(string) error
+	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	EmailValidator func(string) error
+	// DefaultEmailVerified holds the default value on creation for the "email_verified" field.
+	DefaultEmailVerified bool
+	// PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	PasswordValidator func(string) error
+	// FirstNameValidator is a validator for the "first_name" field. It is called by the builders before save.
+	FirstNameValidator func(string) error
+	// LastNameValidator is a validator for the "last_name" field. It is called by the builders before save.
+	LastNameValidator func(string) error
+	// DefaultFailedLoginAttempts holds the default value on creation for the "failed_login_attempts" field.
+	DefaultFailedLoginAttempts int
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() string
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(string) error
+)
+
+// AccountStatus defines the type for the "account_status" enum field.
+type AccountStatus string
+
+// AccountStatusPending is the default value of the AccountStatus enum.
+const DefaultAccountStatus = AccountStatusPending
+
+// AccountStatus values.
+const (
+	AccountStatusPending   AccountStatus = "pending"
+	AccountStatusActive    AccountStatus = "active"
+	AccountStatusSuspended AccountStatus = "suspended"
+)
+
+func (as AccountStatus) String() string {
+	return string(as)
+}
+
+// AccountStatusValidator is a validator for the "account_status" field enum values. It is called by the builders before save.
+func AccountStatusValidator(as AccountStatus) error {
+	switch as {
+	case AccountStatusPending, AccountStatusActive, AccountStatusSuspended:
+		return nil
+	default:
+		return fmt.Errorf("user: invalid enum value for account_status field: %q", as)
+	}
+}
+
 // OrderOption defines the ordering options for the User queries.
 type OrderOption func(*sql.Selector)
 
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreateTime orders the results by the create_time field.
+func ByCreateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreateTime, opts...).ToFunc()
+}
+
+// ByUpdateTime orders the results by the update_time field.
+func ByUpdateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdateTime, opts...).ToFunc()
+}
+
+// ByUsername orders the results by the username field.
+func ByUsername(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUsername, opts...).ToFunc()
+}
+
+// ByEmail orders the results by the email field.
+func ByEmail(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmail, opts...).ToFunc()
+}
+
+// ByEmailVerified orders the results by the email_verified field.
+func ByEmailVerified(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmailVerified, opts...).ToFunc()
+}
+
+// ByPassword orders the results by the password field.
+func ByPassword(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPassword, opts...).ToFunc()
+}
+
+// ByFirstName orders the results by the first_name field.
+func ByFirstName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFirstName, opts...).ToFunc()
+}
+
+// ByLastName orders the results by the last_name field.
+func ByLastName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastName, opts...).ToFunc()
+}
+
+// ByLastLoginAt orders the results by the last_login_at field.
+func ByLastLoginAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastLoginAt, opts...).ToFunc()
+}
+
+// ByAccountStatus orders the results by the account_status field.
+func ByAccountStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAccountStatus, opts...).ToFunc()
+}
+
+// ByVerificationToken orders the results by the verification_token field.
+func ByVerificationToken(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVerificationToken, opts...).ToFunc()
+}
+
+// ByVerificationTokenExpiryAt orders the results by the verification_token_expiry_at field.
+func ByVerificationTokenExpiryAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVerificationTokenExpiryAt, opts...).ToFunc()
+}
+
+// ByFailedLoginAttempts orders the results by the failed_login_attempts field.
+func ByFailedLoginAttempts(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFailedLoginAttempts, opts...).ToFunc()
+}
+
+// ByResetPasswordToken orders the results by the reset_password_token field.
+func ByResetPasswordToken(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldResetPasswordToken, opts...).ToFunc()
+}
+
+// ByResetPasswordTokenExpiryAt orders the results by the reset_password_token_expiry_at field.
+func ByResetPasswordTokenExpiryAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldResetPasswordTokenExpiryAt, opts...).ToFunc()
+}
+
+// BySessionsCount orders the results by sessions count.
+func BySessionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSessionsStep(), opts...)
+	}
+}
+
+// BySessions orders the results by sessions terms.
+func BySessions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSessionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newSessionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SessionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SessionsTable, SessionsColumn),
+	)
 }

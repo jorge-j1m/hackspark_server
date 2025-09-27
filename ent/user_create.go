@@ -4,10 +4,13 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/jorge-j1m/hackspark_server/ent/session"
 	"github.com/jorge-j1m/hackspark_server/ent/user"
 )
 
@@ -18,6 +21,205 @@ type UserCreate struct {
 	hooks    []Hook
 }
 
+// SetCreateTime sets the "create_time" field.
+func (_c *UserCreate) SetCreateTime(v time.Time) *UserCreate {
+	_c.mutation.SetCreateTime(v)
+	return _c
+}
+
+// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
+func (_c *UserCreate) SetNillableCreateTime(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetCreateTime(*v)
+	}
+	return _c
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (_c *UserCreate) SetUpdateTime(v time.Time) *UserCreate {
+	_c.mutation.SetUpdateTime(v)
+	return _c
+}
+
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (_c *UserCreate) SetNillableUpdateTime(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetUpdateTime(*v)
+	}
+	return _c
+}
+
+// SetUsername sets the "username" field.
+func (_c *UserCreate) SetUsername(v string) *UserCreate {
+	_c.mutation.SetUsername(v)
+	return _c
+}
+
+// SetEmail sets the "email" field.
+func (_c *UserCreate) SetEmail(v string) *UserCreate {
+	_c.mutation.SetEmail(v)
+	return _c
+}
+
+// SetEmailVerified sets the "email_verified" field.
+func (_c *UserCreate) SetEmailVerified(v bool) *UserCreate {
+	_c.mutation.SetEmailVerified(v)
+	return _c
+}
+
+// SetNillableEmailVerified sets the "email_verified" field if the given value is not nil.
+func (_c *UserCreate) SetNillableEmailVerified(v *bool) *UserCreate {
+	if v != nil {
+		_c.SetEmailVerified(*v)
+	}
+	return _c
+}
+
+// SetPassword sets the "password" field.
+func (_c *UserCreate) SetPassword(v string) *UserCreate {
+	_c.mutation.SetPassword(v)
+	return _c
+}
+
+// SetFirstName sets the "first_name" field.
+func (_c *UserCreate) SetFirstName(v string) *UserCreate {
+	_c.mutation.SetFirstName(v)
+	return _c
+}
+
+// SetLastName sets the "last_name" field.
+func (_c *UserCreate) SetLastName(v string) *UserCreate {
+	_c.mutation.SetLastName(v)
+	return _c
+}
+
+// SetLastLoginAt sets the "last_login_at" field.
+func (_c *UserCreate) SetLastLoginAt(v time.Time) *UserCreate {
+	_c.mutation.SetLastLoginAt(v)
+	return _c
+}
+
+// SetNillableLastLoginAt sets the "last_login_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableLastLoginAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetLastLoginAt(*v)
+	}
+	return _c
+}
+
+// SetAccountStatus sets the "account_status" field.
+func (_c *UserCreate) SetAccountStatus(v user.AccountStatus) *UserCreate {
+	_c.mutation.SetAccountStatus(v)
+	return _c
+}
+
+// SetNillableAccountStatus sets the "account_status" field if the given value is not nil.
+func (_c *UserCreate) SetNillableAccountStatus(v *user.AccountStatus) *UserCreate {
+	if v != nil {
+		_c.SetAccountStatus(*v)
+	}
+	return _c
+}
+
+// SetVerificationToken sets the "verification_token" field.
+func (_c *UserCreate) SetVerificationToken(v string) *UserCreate {
+	_c.mutation.SetVerificationToken(v)
+	return _c
+}
+
+// SetNillableVerificationToken sets the "verification_token" field if the given value is not nil.
+func (_c *UserCreate) SetNillableVerificationToken(v *string) *UserCreate {
+	if v != nil {
+		_c.SetVerificationToken(*v)
+	}
+	return _c
+}
+
+// SetVerificationTokenExpiryAt sets the "verification_token_expiry_at" field.
+func (_c *UserCreate) SetVerificationTokenExpiryAt(v time.Time) *UserCreate {
+	_c.mutation.SetVerificationTokenExpiryAt(v)
+	return _c
+}
+
+// SetNillableVerificationTokenExpiryAt sets the "verification_token_expiry_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableVerificationTokenExpiryAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetVerificationTokenExpiryAt(*v)
+	}
+	return _c
+}
+
+// SetFailedLoginAttempts sets the "failed_login_attempts" field.
+func (_c *UserCreate) SetFailedLoginAttempts(v int) *UserCreate {
+	_c.mutation.SetFailedLoginAttempts(v)
+	return _c
+}
+
+// SetNillableFailedLoginAttempts sets the "failed_login_attempts" field if the given value is not nil.
+func (_c *UserCreate) SetNillableFailedLoginAttempts(v *int) *UserCreate {
+	if v != nil {
+		_c.SetFailedLoginAttempts(*v)
+	}
+	return _c
+}
+
+// SetResetPasswordToken sets the "reset_password_token" field.
+func (_c *UserCreate) SetResetPasswordToken(v string) *UserCreate {
+	_c.mutation.SetResetPasswordToken(v)
+	return _c
+}
+
+// SetNillableResetPasswordToken sets the "reset_password_token" field if the given value is not nil.
+func (_c *UserCreate) SetNillableResetPasswordToken(v *string) *UserCreate {
+	if v != nil {
+		_c.SetResetPasswordToken(*v)
+	}
+	return _c
+}
+
+// SetResetPasswordTokenExpiryAt sets the "reset_password_token_expiry_at" field.
+func (_c *UserCreate) SetResetPasswordTokenExpiryAt(v time.Time) *UserCreate {
+	_c.mutation.SetResetPasswordTokenExpiryAt(v)
+	return _c
+}
+
+// SetNillableResetPasswordTokenExpiryAt sets the "reset_password_token_expiry_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableResetPasswordTokenExpiryAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetResetPasswordTokenExpiryAt(*v)
+	}
+	return _c
+}
+
+// SetID sets the "id" field.
+func (_c *UserCreate) SetID(v string) *UserCreate {
+	_c.mutation.SetID(v)
+	return _c
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (_c *UserCreate) SetNillableID(v *string) *UserCreate {
+	if v != nil {
+		_c.SetID(*v)
+	}
+	return _c
+}
+
+// AddSessionIDs adds the "sessions" edge to the Session entity by IDs.
+func (_c *UserCreate) AddSessionIDs(ids ...string) *UserCreate {
+	_c.mutation.AddSessionIDs(ids...)
+	return _c
+}
+
+// AddSessions adds the "sessions" edges to the Session entity.
+func (_c *UserCreate) AddSessions(v ...*Session) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSessionIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_c *UserCreate) Mutation() *UserMutation {
 	return _c.mutation
@@ -25,6 +227,9 @@ func (_c *UserCreate) Mutation() *UserMutation {
 
 // Save creates the User in the database.
 func (_c *UserCreate) Save(ctx context.Context) (*User, error) {
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -50,8 +255,111 @@ func (_c *UserCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (_c *UserCreate) defaults() error {
+	if _, ok := _c.mutation.CreateTime(); !ok {
+		if user.DefaultCreateTime == nil {
+			return fmt.Errorf("ent: uninitialized user.DefaultCreateTime (forgotten import ent/runtime?)")
+		}
+		v := user.DefaultCreateTime()
+		_c.mutation.SetCreateTime(v)
+	}
+	if _, ok := _c.mutation.UpdateTime(); !ok {
+		if user.DefaultUpdateTime == nil {
+			return fmt.Errorf("ent: uninitialized user.DefaultUpdateTime (forgotten import ent/runtime?)")
+		}
+		v := user.DefaultUpdateTime()
+		_c.mutation.SetUpdateTime(v)
+	}
+	if _, ok := _c.mutation.EmailVerified(); !ok {
+		v := user.DefaultEmailVerified
+		_c.mutation.SetEmailVerified(v)
+	}
+	if _, ok := _c.mutation.AccountStatus(); !ok {
+		v := user.DefaultAccountStatus
+		_c.mutation.SetAccountStatus(v)
+	}
+	if _, ok := _c.mutation.FailedLoginAttempts(); !ok {
+		v := user.DefaultFailedLoginAttempts
+		_c.mutation.SetFailedLoginAttempts(v)
+	}
+	if _, ok := _c.mutation.ID(); !ok {
+		if user.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized user.DefaultID (forgotten import ent/runtime?)")
+		}
+		v := user.DefaultID()
+		_c.mutation.SetID(v)
+	}
+	return nil
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (_c *UserCreate) check() error {
+	if _, ok := _c.mutation.CreateTime(); !ok {
+		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "User.create_time"`)}
+	}
+	if _, ok := _c.mutation.UpdateTime(); !ok {
+		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "User.update_time"`)}
+	}
+	if _, ok := _c.mutation.Username(); !ok {
+		return &ValidationError{Name: "username", err: errors.New(`ent: missing required field "User.username"`)}
+	}
+	if v, ok := _c.mutation.Username(); ok {
+		if err := user.UsernameValidator(v); err != nil {
+			return &ValidationError{Name: "username", err: fmt.Errorf(`ent: validator failed for field "User.username": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Email(); !ok {
+		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "User.email"`)}
+	}
+	if v, ok := _c.mutation.Email(); ok {
+		if err := user.EmailValidator(v); err != nil {
+			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.EmailVerified(); !ok {
+		return &ValidationError{Name: "email_verified", err: errors.New(`ent: missing required field "User.email_verified"`)}
+	}
+	if _, ok := _c.mutation.Password(); !ok {
+		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "User.password"`)}
+	}
+	if v, ok := _c.mutation.Password(); ok {
+		if err := user.PasswordValidator(v); err != nil {
+			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.FirstName(); !ok {
+		return &ValidationError{Name: "first_name", err: errors.New(`ent: missing required field "User.first_name"`)}
+	}
+	if v, ok := _c.mutation.FirstName(); ok {
+		if err := user.FirstNameValidator(v); err != nil {
+			return &ValidationError{Name: "first_name", err: fmt.Errorf(`ent: validator failed for field "User.first_name": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.LastName(); !ok {
+		return &ValidationError{Name: "last_name", err: errors.New(`ent: missing required field "User.last_name"`)}
+	}
+	if v, ok := _c.mutation.LastName(); ok {
+		if err := user.LastNameValidator(v); err != nil {
+			return &ValidationError{Name: "last_name", err: fmt.Errorf(`ent: validator failed for field "User.last_name": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.AccountStatus(); !ok {
+		return &ValidationError{Name: "account_status", err: errors.New(`ent: missing required field "User.account_status"`)}
+	}
+	if v, ok := _c.mutation.AccountStatus(); ok {
+		if err := user.AccountStatusValidator(v); err != nil {
+			return &ValidationError{Name: "account_status", err: fmt.Errorf(`ent: validator failed for field "User.account_status": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.FailedLoginAttempts(); !ok {
+		return &ValidationError{Name: "failed_login_attempts", err: errors.New(`ent: missing required field "User.failed_login_attempts"`)}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := user.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "User.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -66,8 +374,13 @@ func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected User.ID type: %T", _spec.ID.Value)
+		}
+	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
 	return _node, nil
@@ -76,8 +389,88 @@ func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	var (
 		_node = &User{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	)
+	if id, ok := _c.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := _c.mutation.CreateTime(); ok {
+		_spec.SetField(user.FieldCreateTime, field.TypeTime, value)
+		_node.CreateTime = value
+	}
+	if value, ok := _c.mutation.UpdateTime(); ok {
+		_spec.SetField(user.FieldUpdateTime, field.TypeTime, value)
+		_node.UpdateTime = value
+	}
+	if value, ok := _c.mutation.Username(); ok {
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
+		_node.Username = value
+	}
+	if value, ok := _c.mutation.Email(); ok {
+		_spec.SetField(user.FieldEmail, field.TypeString, value)
+		_node.Email = value
+	}
+	if value, ok := _c.mutation.EmailVerified(); ok {
+		_spec.SetField(user.FieldEmailVerified, field.TypeBool, value)
+		_node.EmailVerified = value
+	}
+	if value, ok := _c.mutation.Password(); ok {
+		_spec.SetField(user.FieldPassword, field.TypeString, value)
+		_node.Password = value
+	}
+	if value, ok := _c.mutation.FirstName(); ok {
+		_spec.SetField(user.FieldFirstName, field.TypeString, value)
+		_node.FirstName = value
+	}
+	if value, ok := _c.mutation.LastName(); ok {
+		_spec.SetField(user.FieldLastName, field.TypeString, value)
+		_node.LastName = value
+	}
+	if value, ok := _c.mutation.LastLoginAt(); ok {
+		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
+		_node.LastLoginAt = &value
+	}
+	if value, ok := _c.mutation.AccountStatus(); ok {
+		_spec.SetField(user.FieldAccountStatus, field.TypeEnum, value)
+		_node.AccountStatus = value
+	}
+	if value, ok := _c.mutation.VerificationToken(); ok {
+		_spec.SetField(user.FieldVerificationToken, field.TypeString, value)
+		_node.VerificationToken = &value
+	}
+	if value, ok := _c.mutation.VerificationTokenExpiryAt(); ok {
+		_spec.SetField(user.FieldVerificationTokenExpiryAt, field.TypeTime, value)
+		_node.VerificationTokenExpiryAt = &value
+	}
+	if value, ok := _c.mutation.FailedLoginAttempts(); ok {
+		_spec.SetField(user.FieldFailedLoginAttempts, field.TypeInt, value)
+		_node.FailedLoginAttempts = value
+	}
+	if value, ok := _c.mutation.ResetPasswordToken(); ok {
+		_spec.SetField(user.FieldResetPasswordToken, field.TypeString, value)
+		_node.ResetPasswordToken = &value
+	}
+	if value, ok := _c.mutation.ResetPasswordTokenExpiryAt(); ok {
+		_spec.SetField(user.FieldResetPasswordTokenExpiryAt, field.TypeTime, value)
+		_node.ResetPasswordTokenExpiryAt = &value
+	}
+	if nodes := _c.mutation.SessionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SessionsTable,
+			Columns: []string{user.SessionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -99,6 +492,7 @@ func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserMutation)
 				if !ok {
@@ -125,10 +519,6 @@ func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

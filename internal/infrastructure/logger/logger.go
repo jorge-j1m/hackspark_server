@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/jorge-j1m/hackspark_server/ent"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -13,6 +14,8 @@ import (
 type ContextKey string
 
 const (
+	// UserCtxKey is the context key for the user
+	UserCtxKey ContextKey = "user"
 	// RequestIDCtxKey is the context key for the request ID
 	RequestIDCtxKey ContextKey = "request_id"
 )
@@ -54,6 +57,10 @@ func LogWithContext(ctx context.Context) *zerolog.Logger {
 
 	if reqID, ok := ctx.Value(RequestIDCtxKey).(string); ok && reqID != "" {
 		logger = logger.With().Str("request_id", reqID).Logger()
+	}
+
+	if user, ok := ctx.Value(UserCtxKey).(*ent.User); ok && user != nil && user.ID != "" {
+		logger = logger.With().Str("user_id", user.ID).Logger()
 	}
 
 	return &logger

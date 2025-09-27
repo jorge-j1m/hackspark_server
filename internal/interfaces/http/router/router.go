@@ -11,6 +11,8 @@ import (
 	"github.com/jorge-j1m/hackspark_server/ent"
 	"github.com/jorge-j1m/hackspark_server/internal/infrastructure/config"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler"
+	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler/auth"
+	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler/users"
 	cMiddleware "github.com/jorge-j1m/hackspark_server/internal/interfaces/http/middleware"
 )
 
@@ -38,10 +40,34 @@ func New(cfg *config.Config, client *ent.Client) http.Handler {
 		MaxAge:           300,
 	}))
 
+	// Auth middleware
+	authMiddleware := cMiddleware.NewAuthMiddleware(client)
+
 	// Health check endpoint
 	healthHandler := handler.NewHealthHandler(cfg)
+	authHandler := auth.NewAuthHandler(client)
+	usersHandler := users.NewUsersHandler()
 
 	r.Get("/health", healthHandler.Handle)
+
+	// API routes
+	r.Route("/api", func(r chi.Router) {
+		// v1 API routes
+		r.Route("/v1", func(r chi.Router) {
+			// Auth routes
+			r.Route("/auth", func(r chi.Router) {
+				r.Post("/signup", authHandler.SignUp)
+				r.Post("/login", authHandler.Login)
+				r.Post("/logout", authHandler.Logout)
+			})
+
+			// User routes
+			r.Route("/users", func(r chi.Router) {
+				r.Use(authMiddleware.Authenticate)
+				r.Get("/me", usersHandler.Me)
+			})
+		})
+	})
 
 	return r
 }
