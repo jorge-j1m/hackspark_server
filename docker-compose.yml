@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  hackspark_server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hackspark_server
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - ENVIRONMENT=development
+      - PORT=8080
+      - LOG_LEVEL=debug
+      - DATABASE_STRING="postgres://postgres:postgres@postgres:5432/hackspark?sslmode=disable"
+    volumes:
+      - ./:/app
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17
+    container_name: postgres_hackspark
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hackspark
+    ports:
+      - "5432:5432"
+    volumes:
+      - hackspark_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  cloudflare_tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: hackspark_cloudflare_tunnel
+    restart: unless-stopped
+    env_file:
+      - .env.tunnel
+    depends_on:
+      hackspark_server:
+        condition: service_healthy
+
+volumes:
+  hackspark_data:
+

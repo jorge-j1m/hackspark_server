@@ -1,0 +1,72 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test files
+*_test.go
+testdata/
+
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+.env.tunnel
+
+# Build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+hackspark-api
+
+# Temporary files
+tmp/
+temp/
+
+# Coverage reports
+*.out
+coverage.html
+
+# API documentation and testing
+Insomnia_*.yaml
+*.http
+*.rest
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Dependency directories
+vendor/

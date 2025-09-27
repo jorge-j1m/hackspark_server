@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -29,10 +30,13 @@ func Load() (*Config, error) {
 	// Load .env file if it exists
 	_ = godotenv.Load()
 
+	// Load all the environment variables
+	log.Println(os.Environ())
+
 	cfg := &Config{
 		Port:           getEnv("PORT", "8080"),
 		LogLevel:       getEnv("LOG_LEVEL", "info"),
-		DatabaseString: getEnv("DATABASE_STRING", "host=localhost port=5432 user=postgres dbname=hackspark password=postgres sslmode=disable"),
+		DatabaseString: getEnv("DATABASE_STRING", "host=postgres port=5432 user=postgres dbname=hackspark password=postgres sslmode=disable"),
 		Environment:    getEnv("ENVIRONMENT", "development"),
 
 		// Security defaults
