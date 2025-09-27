@@ -35,9 +35,6 @@ func New(cfg *config.Config) *Server {
 // Start initializes and starts the server
 func (s *Server) Start() error {
 	// Initialize database connection
-	// Log config
-	log.Info().Msgf("Database config: %v", s.config.DatabaseString)
-
 	client, err := ent.Open("postgres", s.config.DatabaseString)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed opening connection to postgres")

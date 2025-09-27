@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   hackspark_server:
     build:
@@ -13,7 +11,7 @@ services:
       - ENVIRONMENT=development
       - PORT=8080
       - LOG_LEVEL=debug
-      - DATABASE_STRING="postgres://postgres:postgres@postgres:5432/hackspark?sslmode=disable"
+      - DATABASE_STRING=host=postgres port=5432 user=postgres dbname=hackspark password=postgres sslmode=disable
     volumes:
       - ./:/app
     healthcheck:
@@ -50,9 +48,7 @@ services:
     restart: unless-stopped
     env_file:
       - .env.tunnel
-    depends_on:
-      hackspark_server:
-        condition: service_healthy
+    command: tunnel --no-autoupdate run
 
 volumes:
   hackspark_data:
