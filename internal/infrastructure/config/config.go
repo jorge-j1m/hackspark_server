@@ -32,7 +32,7 @@ func Load() (*Config, error) {
 	cfg := &Config{
 		Port:           getEnv("PORT", "8080"),
 		LogLevel:       getEnv("LOG_LEVEL", "info"),
-		DatabaseString: getEnv("DATABASE_STRING", "host=localhost port=5432 user=postgres dbname=postgres password=postgres sslmode=disable"),
+		DatabaseString: getEnv("DATABASE_STRING", "host=localhost port=5432 user=postgres dbname=hackspark password=postgres sslmode=disable"),
 		Environment:    getEnv("ENVIRONMENT", "development"),
 
 		// Security defaults
