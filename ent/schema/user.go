@@ -51,6 +51,12 @@ func (User) Fields() []ent.Field {
 			NotEmpty(),
 		field.String("last_name").
 			NotEmpty(),
+		field.String("bio").
+			Optional().
+			Nillable(),
+		field.String("avatar_url").
+			Optional().
+			Nillable(),
 
 		// Account management fields
 		field.Time("last_login_at").
@@ -89,6 +95,10 @@ func (User) Hooks() []ent.Hook {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("sessions", Session.Type), // A user can have many sessions.
+		edge.To("owned_projects", Project.Type), // A user can own many projects.
+		edge.To("liked_projects", Project.Type).Through("likes", Like.Type), // A user can like many projects.
+		edge.To("technologies", Tag.Type).Through("user_technologies", UserTechnology.Type), // A user can know many technologies.
+		edge.To("created_tags", Tag.Type), // A user can create many tags.
 	}
 }
 

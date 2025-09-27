@@ -10,8 +10,12 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/jorge-j1m/hackspark_server/ent/like"
+	"github.com/jorge-j1m/hackspark_server/ent/project"
 	"github.com/jorge-j1m/hackspark_server/ent/session"
+	"github.com/jorge-j1m/hackspark_server/ent/tag"
 	"github.com/jorge-j1m/hackspark_server/ent/user"
+	"github.com/jorge-j1m/hackspark_server/ent/usertechnology"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -90,6 +94,34 @@ func (_c *UserCreate) SetFirstName(v string) *UserCreate {
 // SetLastName sets the "last_name" field.
 func (_c *UserCreate) SetLastName(v string) *UserCreate {
 	_c.mutation.SetLastName(v)
+	return _c
+}
+
+// SetBio sets the "bio" field.
+func (_c *UserCreate) SetBio(v string) *UserCreate {
+	_c.mutation.SetBio(v)
+	return _c
+}
+
+// SetNillableBio sets the "bio" field if the given value is not nil.
+func (_c *UserCreate) SetNillableBio(v *string) *UserCreate {
+	if v != nil {
+		_c.SetBio(*v)
+	}
+	return _c
+}
+
+// SetAvatarURL sets the "avatar_url" field.
+func (_c *UserCreate) SetAvatarURL(v string) *UserCreate {
+	_c.mutation.SetAvatarURL(v)
+	return _c
+}
+
+// SetNillableAvatarURL sets the "avatar_url" field if the given value is not nil.
+func (_c *UserCreate) SetNillableAvatarURL(v *string) *UserCreate {
+	if v != nil {
+		_c.SetAvatarURL(*v)
+	}
 	return _c
 }
 
@@ -218,6 +250,96 @@ func (_c *UserCreate) AddSessions(v ...*Session) *UserCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddSessionIDs(ids...)
+}
+
+// AddOwnedProjectIDs adds the "owned_projects" edge to the Project entity by IDs.
+func (_c *UserCreate) AddOwnedProjectIDs(ids ...string) *UserCreate {
+	_c.mutation.AddOwnedProjectIDs(ids...)
+	return _c
+}
+
+// AddOwnedProjects adds the "owned_projects" edges to the Project entity.
+func (_c *UserCreate) AddOwnedProjects(v ...*Project) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddOwnedProjectIDs(ids...)
+}
+
+// AddLikedProjectIDs adds the "liked_projects" edge to the Project entity by IDs.
+func (_c *UserCreate) AddLikedProjectIDs(ids ...string) *UserCreate {
+	_c.mutation.AddLikedProjectIDs(ids...)
+	return _c
+}
+
+// AddLikedProjects adds the "liked_projects" edges to the Project entity.
+func (_c *UserCreate) AddLikedProjects(v ...*Project) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddLikedProjectIDs(ids...)
+}
+
+// AddTechnologyIDs adds the "technologies" edge to the Tag entity by IDs.
+func (_c *UserCreate) AddTechnologyIDs(ids ...string) *UserCreate {
+	_c.mutation.AddTechnologyIDs(ids...)
+	return _c
+}
+
+// AddTechnologies adds the "technologies" edges to the Tag entity.
+func (_c *UserCreate) AddTechnologies(v ...*Tag) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddTechnologyIDs(ids...)
+}
+
+// AddCreatedTagIDs adds the "created_tags" edge to the Tag entity by IDs.
+func (_c *UserCreate) AddCreatedTagIDs(ids ...string) *UserCreate {
+	_c.mutation.AddCreatedTagIDs(ids...)
+	return _c
+}
+
+// AddCreatedTags adds the "created_tags" edges to the Tag entity.
+func (_c *UserCreate) AddCreatedTags(v ...*Tag) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddCreatedTagIDs(ids...)
+}
+
+// AddLikeIDs adds the "likes" edge to the Like entity by IDs.
+func (_c *UserCreate) AddLikeIDs(ids ...string) *UserCreate {
+	_c.mutation.AddLikeIDs(ids...)
+	return _c
+}
+
+// AddLikes adds the "likes" edges to the Like entity.
+func (_c *UserCreate) AddLikes(v ...*Like) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddLikeIDs(ids...)
+}
+
+// AddUserTechnologyIDs adds the "user_technologies" edge to the UserTechnology entity by IDs.
+func (_c *UserCreate) AddUserTechnologyIDs(ids ...string) *UserCreate {
+	_c.mutation.AddUserTechnologyIDs(ids...)
+	return _c
+}
+
+// AddUserTechnologies adds the "user_technologies" edges to the UserTechnology entity.
+func (_c *UserCreate) AddUserTechnologies(v ...*UserTechnology) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddUserTechnologyIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -427,6 +549,14 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldLastName, field.TypeString, value)
 		_node.LastName = value
 	}
+	if value, ok := _c.mutation.Bio(); ok {
+		_spec.SetField(user.FieldBio, field.TypeString, value)
+		_node.Bio = &value
+	}
+	if value, ok := _c.mutation.AvatarURL(); ok {
+		_spec.SetField(user.FieldAvatarURL, field.TypeString, value)
+		_node.AvatarURL = &value
+	}
 	if value, ok := _c.mutation.LastLoginAt(); ok {
 		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
 		_node.LastLoginAt = &value
@@ -464,6 +594,116 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.OwnedProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.OwnedProjectsTable,
+			Columns: []string{user.OwnedProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.LikedProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.LikedProjectsTable,
+			Columns: user.LikedProjectsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &LikeCreate{config: _c.config, mutation: newLikeMutation(_c.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		if specE.ID.Value != nil {
+			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TechnologiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TechnologiesTable,
+			Columns: user.TechnologiesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tag.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &UserTechnologyCreate{config: _c.config, mutation: newUserTechnologyMutation(_c.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		if specE.ID.Value != nil {
+			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CreatedTagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTagsTable,
+			Columns: []string{user.CreatedTagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tag.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.LikesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.LikesTable,
+			Columns: []string{user.LikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.UserTechnologiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.UserTechnologiesTable,
+			Columns: []string{user.UserTechnologiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(usertechnology.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

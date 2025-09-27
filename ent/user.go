@@ -33,6 +33,10 @@ type User struct {
 	FirstName string `json:"first_name,omitempty"`
 	// LastName holds the value of the "last_name" field.
 	LastName string `json:"last_name,omitempty"`
+	// Bio holds the value of the "bio" field.
+	Bio *string `json:"bio,omitempty"`
+	// AvatarURL holds the value of the "avatar_url" field.
+	AvatarURL *string `json:"avatar_url,omitempty"`
 	// LastLoginAt holds the value of the "last_login_at" field.
 	LastLoginAt *time.Time `json:"last_login_at,omitempty"`
 	// AccountStatus holds the value of the "account_status" field.
@@ -57,9 +61,21 @@ type User struct {
 type UserEdges struct {
 	// Sessions holds the value of the sessions edge.
 	Sessions []*Session `json:"sessions,omitempty"`
+	// OwnedProjects holds the value of the owned_projects edge.
+	OwnedProjects []*Project `json:"owned_projects,omitempty"`
+	// LikedProjects holds the value of the liked_projects edge.
+	LikedProjects []*Project `json:"liked_projects,omitempty"`
+	// Technologies holds the value of the technologies edge.
+	Technologies []*Tag `json:"technologies,omitempty"`
+	// CreatedTags holds the value of the created_tags edge.
+	CreatedTags []*Tag `json:"created_tags,omitempty"`
+	// Likes holds the value of the likes edge.
+	Likes []*Like `json:"likes,omitempty"`
+	// UserTechnologies holds the value of the user_technologies edge.
+	UserTechnologies []*UserTechnology `json:"user_technologies,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [7]bool
 }
 
 // SessionsOrErr returns the Sessions value or an error if the edge
@@ -71,6 +87,60 @@ func (e UserEdges) SessionsOrErr() ([]*Session, error) {
 	return nil, &NotLoadedError{edge: "sessions"}
 }
 
+// OwnedProjectsOrErr returns the OwnedProjects value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) OwnedProjectsOrErr() ([]*Project, error) {
+	if e.loadedTypes[1] {
+		return e.OwnedProjects, nil
+	}
+	return nil, &NotLoadedError{edge: "owned_projects"}
+}
+
+// LikedProjectsOrErr returns the LikedProjects value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) LikedProjectsOrErr() ([]*Project, error) {
+	if e.loadedTypes[2] {
+		return e.LikedProjects, nil
+	}
+	return nil, &NotLoadedError{edge: "liked_projects"}
+}
+
+// TechnologiesOrErr returns the Technologies value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TechnologiesOrErr() ([]*Tag, error) {
+	if e.loadedTypes[3] {
+		return e.Technologies, nil
+	}
+	return nil, &NotLoadedError{edge: "technologies"}
+}
+
+// CreatedTagsOrErr returns the CreatedTags value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CreatedTagsOrErr() ([]*Tag, error) {
+	if e.loadedTypes[4] {
+		return e.CreatedTags, nil
+	}
+	return nil, &NotLoadedError{edge: "created_tags"}
+}
+
+// LikesOrErr returns the Likes value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) LikesOrErr() ([]*Like, error) {
+	if e.loadedTypes[5] {
+		return e.Likes, nil
+	}
+	return nil, &NotLoadedError{edge: "likes"}
+}
+
+// UserTechnologiesOrErr returns the UserTechnologies value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) UserTechnologiesOrErr() ([]*UserTechnology, error) {
+	if e.loadedTypes[6] {
+		return e.UserTechnologies, nil
+	}
+	return nil, &NotLoadedError{edge: "user_technologies"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -80,7 +150,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case user.FieldFailedLoginAttempts:
 			values[i] = new(sql.NullInt64)
-		case user.FieldID, user.FieldUsername, user.FieldEmail, user.FieldPassword, user.FieldFirstName, user.FieldLastName, user.FieldAccountStatus, user.FieldVerificationToken, user.FieldResetPasswordToken:
+		case user.FieldID, user.FieldUsername, user.FieldEmail, user.FieldPassword, user.FieldFirstName, user.FieldLastName, user.FieldBio, user.FieldAvatarURL, user.FieldAccountStatus, user.FieldVerificationToken, user.FieldResetPasswordToken:
 			values[i] = new(sql.NullString)
 		case user.FieldCreateTime, user.FieldUpdateTime, user.FieldLastLoginAt, user.FieldVerificationTokenExpiryAt, user.FieldResetPasswordTokenExpiryAt:
 			values[i] = new(sql.NullTime)
@@ -153,6 +223,20 @@ func (_m *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.LastName = value.String
 			}
+		case user.FieldBio:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field bio", values[i])
+			} else if value.Valid {
+				_m.Bio = new(string)
+				*_m.Bio = value.String
+			}
+		case user.FieldAvatarURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field avatar_url", values[i])
+			} else if value.Valid {
+				_m.AvatarURL = new(string)
+				*_m.AvatarURL = value.String
+			}
 		case user.FieldLastLoginAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field last_login_at", values[i])
@@ -218,6 +302,36 @@ func (_m *User) QuerySessions() *SessionQuery {
 	return NewUserClient(_m.config).QuerySessions(_m)
 }
 
+// QueryOwnedProjects queries the "owned_projects" edge of the User entity.
+func (_m *User) QueryOwnedProjects() *ProjectQuery {
+	return NewUserClient(_m.config).QueryOwnedProjects(_m)
+}
+
+// QueryLikedProjects queries the "liked_projects" edge of the User entity.
+func (_m *User) QueryLikedProjects() *ProjectQuery {
+	return NewUserClient(_m.config).QueryLikedProjects(_m)
+}
+
+// QueryTechnologies queries the "technologies" edge of the User entity.
+func (_m *User) QueryTechnologies() *TagQuery {
+	return NewUserClient(_m.config).QueryTechnologies(_m)
+}
+
+// QueryCreatedTags queries the "created_tags" edge of the User entity.
+func (_m *User) QueryCreatedTags() *TagQuery {
+	return NewUserClient(_m.config).QueryCreatedTags(_m)
+}
+
+// QueryLikes queries the "likes" edge of the User entity.
+func (_m *User) QueryLikes() *LikeQuery {
+	return NewUserClient(_m.config).QueryLikes(_m)
+}
+
+// QueryUserTechnologies queries the "user_technologies" edge of the User entity.
+func (_m *User) QueryUserTechnologies() *UserTechnologyQuery {
+	return NewUserClient(_m.config).QueryUserTechnologies(_m)
+}
+
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -263,6 +377,16 @@ func (_m *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("last_name=")
 	builder.WriteString(_m.LastName)
+	builder.WriteString(", ")
+	if v := _m.Bio; v != nil {
+		builder.WriteString("bio=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.AvatarURL; v != nil {
+		builder.WriteString("avatar_url=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	if v := _m.LastLoginAt; v != nil {
 		builder.WriteString("last_login_at=")

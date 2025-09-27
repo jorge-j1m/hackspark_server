@@ -12,10 +12,20 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Like is the client for interacting with the Like builders.
+	Like *LikeClient
+	// Project is the client for interacting with the Project builders.
+	Project *ProjectClient
+	// ProjectTag is the client for interacting with the ProjectTag builders.
+	ProjectTag *ProjectTagClient
 	// Session is the client for interacting with the Session builders.
 	Session *SessionClient
+	// Tag is the client for interacting with the Tag builders.
+	Tag *TagClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// UserTechnology is the client for interacting with the UserTechnology builders.
+	UserTechnology *UserTechnologyClient
 
 	// lazily loaded.
 	client     *Client
@@ -147,8 +157,13 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Like = NewLikeClient(tx.config)
+	tx.Project = NewProjectClient(tx.config)
+	tx.ProjectTag = NewProjectTagClient(tx.config)
 	tx.Session = NewSessionClient(tx.config)
+	tx.Tag = NewTagClient(tx.config)
 	tx.User = NewUserClient(tx.config)
+	tx.UserTechnology = NewUserTechnologyClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -158,7 +173,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Session.QueryXXX(), the query will be executed
+// applies a query, for example: Like.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

@@ -20,4 +20,11 @@ var (
 	ErrUserInactive     = NewForbiddenError("user account is not active")
 	ErrAccountInactive  = NewAuthorizationError("User account is inactive")
 	ErrAccountSuspended = NewForbiddenError("Account suspended")
+
+	// General errors
+	ErrInvalidRequest      = NewBadRequestError("Invalid request data")
+	ErrNotFound           = NewNotFoundError("Resource not found")
+	ErrForbidden          = NewForbiddenError("Access forbidden")
+	ErrInternalServerError = NewInternalError("Internal server error")
+	ErrConflict           = NewConflictError("Resource already exists")
 )

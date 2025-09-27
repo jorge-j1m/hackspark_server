@@ -8,6 +8,129 @@ import (
 )
 
 var (
+	// LikesColumns holds the columns for the "likes" table.
+	LikesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeString},
+		{Name: "project_id", Type: field.TypeString},
+	}
+	// LikesTable holds the schema information for the "likes" table.
+	LikesTable = &schema.Table{
+		Name:       "likes",
+		Columns:    LikesColumns,
+		PrimaryKey: []*schema.Column{LikesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "likes_users_user",
+				Columns:    []*schema.Column{LikesColumns[3]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "likes_projects_project",
+				Columns:    []*schema.Column{LikesColumns[4]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "like_user_id_project_id",
+				Unique:  true,
+				Columns: []*schema.Column{LikesColumns[3], LikesColumns[4]},
+			},
+			{
+				Name:    "like_project_id",
+				Unique:  false,
+				Columns: []*schema.Column{LikesColumns[4]},
+			},
+		},
+	}
+	// ProjectsColumns holds the columns for the "projects" table.
+	ProjectsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "is_public", Type: field.TypeBool, Default: true},
+		{Name: "like_count", Type: field.TypeInt, Default: 0},
+		{Name: "star_count", Type: field.TypeInt, Default: 0},
+		{Name: "user_owned_projects", Type: field.TypeString},
+	}
+	// ProjectsTable holds the schema information for the "projects" table.
+	ProjectsTable = &schema.Table{
+		Name:       "projects",
+		Columns:    ProjectsColumns,
+		PrimaryKey: []*schema.Column{ProjectsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "projects_users_owned_projects",
+				Columns:    []*schema.Column{ProjectsColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "project_is_public",
+				Unique:  false,
+				Columns: []*schema.Column{ProjectsColumns[5]},
+			},
+			{
+				Name:    "project_like_count",
+				Unique:  false,
+				Columns: []*schema.Column{ProjectsColumns[6]},
+			},
+			{
+				Name:    "project_user_owned_projects",
+				Unique:  false,
+				Columns: []*schema.Column{ProjectsColumns[8]},
+			},
+		},
+	}
+	// ProjectTagsColumns holds the columns for the "project_tags" table.
+	ProjectTagsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "tag_id", Type: field.TypeString},
+	}
+	// ProjectTagsTable holds the schema information for the "project_tags" table.
+	ProjectTagsTable = &schema.Table{
+		Name:       "project_tags",
+		Columns:    ProjectTagsColumns,
+		PrimaryKey: []*schema.Column{ProjectTagsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "project_tags_projects_project",
+				Columns:    []*schema.Column{ProjectTagsColumns[3]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "project_tags_tags_tag",
+				Columns:    []*schema.Column{ProjectTagsColumns[4]},
+				RefColumns: []*schema.Column{TagsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "projecttag_project_id_tag_id",
+				Unique:  true,
+				Columns: []*schema.Column{ProjectTagsColumns[3], ProjectTagsColumns[4]},
+			},
+			{
+				Name:    "projecttag_tag_id",
+				Unique:  false,
+				Columns: []*schema.Column{ProjectTagsColumns[4]},
+			},
+		},
+	}
 	// SessionsColumns holds the columns for the "sessions" table.
 	SessionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
@@ -39,6 +162,55 @@ var (
 			},
 		},
 	}
+	// TagsColumns holds the columns for the "tags" table.
+	TagsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "icon", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "category", Type: field.TypeEnum, Enums: []string{"language", "framework", "tool", "database", "other"}, Default: "other"},
+		{Name: "usage_count", Type: field.TypeInt, Default: 0},
+		{Name: "user_created_tags", Type: field.TypeString, Nullable: true},
+	}
+	// TagsTable holds the schema information for the "tags" table.
+	TagsTable = &schema.Table{
+		Name:       "tags",
+		Columns:    TagsColumns,
+		PrimaryKey: []*schema.Column{TagsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tags_users_created_tags",
+				Columns:    []*schema.Column{TagsColumns[9]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "tag_slug",
+				Unique:  true,
+				Columns: []*schema.Column{TagsColumns[4]},
+			},
+			{
+				Name:    "tag_usage_count",
+				Unique:  false,
+				Columns: []*schema.Column{TagsColumns[8]},
+			},
+			{
+				Name:    "tag_name",
+				Unique:  false,
+				Columns: []*schema.Column{TagsColumns[3]},
+			},
+			{
+				Name:    "tag_category",
+				Unique:  false,
+				Columns: []*schema.Column{TagsColumns[7]},
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
@@ -50,6 +222,8 @@ var (
 		{Name: "password", Type: field.TypeString},
 		{Name: "first_name", Type: field.TypeString},
 		{Name: "last_name", Type: field.TypeString},
+		{Name: "bio", Type: field.TypeString, Nullable: true},
+		{Name: "avatar_url", Type: field.TypeString, Nullable: true},
 		{Name: "last_login_at", Type: field.TypeTime, Nullable: true},
 		{Name: "account_status", Type: field.TypeEnum, Enums: []string{"pending", "active", "suspended"}, Default: "pending"},
 		{Name: "verification_token", Type: field.TypeString, Nullable: true},
@@ -64,13 +238,79 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
+	// UserTechnologiesColumns holds the columns for the "user_technologies" table.
+	UserTechnologiesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "skill_level", Type: field.TypeEnum, Enums: []string{"beginner", "intermediate", "expert"}, Default: "beginner"},
+		{Name: "years_experience", Type: field.TypeFloat64, Nullable: true},
+		{Name: "is_primary", Type: field.TypeBool, Default: false},
+		{Name: "user_id", Type: field.TypeString},
+		{Name: "technology_id", Type: field.TypeString},
+	}
+	// UserTechnologiesTable holds the schema information for the "user_technologies" table.
+	UserTechnologiesTable = &schema.Table{
+		Name:       "user_technologies",
+		Columns:    UserTechnologiesColumns,
+		PrimaryKey: []*schema.Column{UserTechnologiesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_technologies_users_user",
+				Columns:    []*schema.Column{UserTechnologiesColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "user_technologies_tags_technology",
+				Columns:    []*schema.Column{UserTechnologiesColumns[7]},
+				RefColumns: []*schema.Column{TagsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "usertechnology_user_id_technology_id",
+				Unique:  true,
+				Columns: []*schema.Column{UserTechnologiesColumns[6], UserTechnologiesColumns[7]},
+			},
+			{
+				Name:    "usertechnology_technology_id",
+				Unique:  false,
+				Columns: []*schema.Column{UserTechnologiesColumns[7]},
+			},
+			{
+				Name:    "usertechnology_skill_level",
+				Unique:  false,
+				Columns: []*schema.Column{UserTechnologiesColumns[3]},
+			},
+			{
+				Name:    "usertechnology_is_primary",
+				Unique:  false,
+				Columns: []*schema.Column{UserTechnologiesColumns[5]},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		LikesTable,
+		ProjectsTable,
+		ProjectTagsTable,
 		SessionsTable,
+		TagsTable,
 		UsersTable,
+		UserTechnologiesTable,
 	}
 )
 
 func init() {
+	LikesTable.ForeignKeys[0].RefTable = UsersTable
+	LikesTable.ForeignKeys[1].RefTable = ProjectsTable
+	ProjectsTable.ForeignKeys[0].RefTable = UsersTable
+	ProjectTagsTable.ForeignKeys[0].RefTable = ProjectsTable
+	ProjectTagsTable.ForeignKeys[1].RefTable = TagsTable
 	SessionsTable.ForeignKeys[0].RefTable = UsersTable
+	TagsTable.ForeignKeys[0].RefTable = UsersTable
+	UserTechnologiesTable.ForeignKeys[0].RefTable = UsersTable
+	UserTechnologiesTable.ForeignKeys[1].RefTable = TagsTable
 }

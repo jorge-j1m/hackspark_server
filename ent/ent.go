@@ -12,8 +12,13 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/jorge-j1m/hackspark_server/ent/like"
+	"github.com/jorge-j1m/hackspark_server/ent/project"
+	"github.com/jorge-j1m/hackspark_server/ent/projecttag"
 	"github.com/jorge-j1m/hackspark_server/ent/session"
+	"github.com/jorge-j1m/hackspark_server/ent/tag"
 	"github.com/jorge-j1m/hackspark_server/ent/user"
+	"github.com/jorge-j1m/hackspark_server/ent/usertechnology"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -74,8 +79,13 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			session.Table: session.ValidColumn,
-			user.Table:    user.ValidColumn,
+			like.Table:           like.ValidColumn,
+			project.Table:        project.ValidColumn,
+			projecttag.Table:     projecttag.ValidColumn,
+			session.Table:        session.ValidColumn,
+			tag.Table:            tag.ValidColumn,
+			user.Table:           user.ValidColumn,
+			usertechnology.Table: usertechnology.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

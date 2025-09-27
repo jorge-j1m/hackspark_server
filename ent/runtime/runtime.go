@@ -5,15 +5,115 @@ package runtime
 import (
 	"time"
 
+	"github.com/jorge-j1m/hackspark_server/ent/like"
+	"github.com/jorge-j1m/hackspark_server/ent/project"
+	"github.com/jorge-j1m/hackspark_server/ent/projecttag"
 	"github.com/jorge-j1m/hackspark_server/ent/schema"
 	"github.com/jorge-j1m/hackspark_server/ent/session"
+	"github.com/jorge-j1m/hackspark_server/ent/tag"
 	"github.com/jorge-j1m/hackspark_server/ent/user"
+	"github.com/jorge-j1m/hackspark_server/ent/usertechnology"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	likeMixin := schema.Like{}.Mixin()
+	likeMixinFields0 := likeMixin[0].Fields()
+	_ = likeMixinFields0
+	likeFields := schema.Like{}.Fields()
+	_ = likeFields
+	// likeDescCreateTime is the schema descriptor for create_time field.
+	likeDescCreateTime := likeMixinFields0[0].Descriptor()
+	// like.DefaultCreateTime holds the default value on creation for the create_time field.
+	like.DefaultCreateTime = likeDescCreateTime.Default.(func() time.Time)
+	// likeDescUpdateTime is the schema descriptor for update_time field.
+	likeDescUpdateTime := likeMixinFields0[1].Descriptor()
+	// like.DefaultUpdateTime holds the default value on creation for the update_time field.
+	like.DefaultUpdateTime = likeDescUpdateTime.Default.(func() time.Time)
+	// like.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	like.UpdateDefaultUpdateTime = likeDescUpdateTime.UpdateDefault.(func() time.Time)
+	// likeDescUserID is the schema descriptor for user_id field.
+	likeDescUserID := likeFields[1].Descriptor()
+	// like.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	like.UserIDValidator = likeDescUserID.Validators[0].(func(string) error)
+	// likeDescProjectID is the schema descriptor for project_id field.
+	likeDescProjectID := likeFields[2].Descriptor()
+	// like.ProjectIDValidator is a validator for the "project_id" field. It is called by the builders before save.
+	like.ProjectIDValidator = likeDescProjectID.Validators[0].(func(string) error)
+	// likeDescID is the schema descriptor for id field.
+	likeDescID := likeFields[0].Descriptor()
+	// like.DefaultID holds the default value on creation for the id field.
+	like.DefaultID = likeDescID.Default.(func() string)
+	// like.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	like.IDValidator = likeDescID.Validators[0].(func(string) error)
+	projectMixin := schema.Project{}.Mixin()
+	projectMixinFields0 := projectMixin[0].Fields()
+	_ = projectMixinFields0
+	projectFields := schema.Project{}.Fields()
+	_ = projectFields
+	// projectDescCreateTime is the schema descriptor for create_time field.
+	projectDescCreateTime := projectMixinFields0[0].Descriptor()
+	// project.DefaultCreateTime holds the default value on creation for the create_time field.
+	project.DefaultCreateTime = projectDescCreateTime.Default.(func() time.Time)
+	// projectDescUpdateTime is the schema descriptor for update_time field.
+	projectDescUpdateTime := projectMixinFields0[1].Descriptor()
+	// project.DefaultUpdateTime holds the default value on creation for the update_time field.
+	project.DefaultUpdateTime = projectDescUpdateTime.Default.(func() time.Time)
+	// project.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	project.UpdateDefaultUpdateTime = projectDescUpdateTime.UpdateDefault.(func() time.Time)
+	// projectDescName is the schema descriptor for name field.
+	projectDescName := projectFields[1].Descriptor()
+	// project.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	project.NameValidator = projectDescName.Validators[0].(func(string) error)
+	// projectDescIsPublic is the schema descriptor for is_public field.
+	projectDescIsPublic := projectFields[3].Descriptor()
+	// project.DefaultIsPublic holds the default value on creation for the is_public field.
+	project.DefaultIsPublic = projectDescIsPublic.Default.(bool)
+	// projectDescLikeCount is the schema descriptor for like_count field.
+	projectDescLikeCount := projectFields[4].Descriptor()
+	// project.DefaultLikeCount holds the default value on creation for the like_count field.
+	project.DefaultLikeCount = projectDescLikeCount.Default.(int)
+	// projectDescStarCount is the schema descriptor for star_count field.
+	projectDescStarCount := projectFields[5].Descriptor()
+	// project.DefaultStarCount holds the default value on creation for the star_count field.
+	project.DefaultStarCount = projectDescStarCount.Default.(int)
+	// projectDescID is the schema descriptor for id field.
+	projectDescID := projectFields[0].Descriptor()
+	// project.DefaultID holds the default value on creation for the id field.
+	project.DefaultID = projectDescID.Default.(func() string)
+	// project.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	project.IDValidator = projectDescID.Validators[0].(func(string) error)
+	projecttagMixin := schema.ProjectTag{}.Mixin()
+	projecttagMixinFields0 := projecttagMixin[0].Fields()
+	_ = projecttagMixinFields0
+	projecttagFields := schema.ProjectTag{}.Fields()
+	_ = projecttagFields
+	// projecttagDescCreateTime is the schema descriptor for create_time field.
+	projecttagDescCreateTime := projecttagMixinFields0[0].Descriptor()
+	// projecttag.DefaultCreateTime holds the default value on creation for the create_time field.
+	projecttag.DefaultCreateTime = projecttagDescCreateTime.Default.(func() time.Time)
+	// projecttagDescUpdateTime is the schema descriptor for update_time field.
+	projecttagDescUpdateTime := projecttagMixinFields0[1].Descriptor()
+	// projecttag.DefaultUpdateTime holds the default value on creation for the update_time field.
+	projecttag.DefaultUpdateTime = projecttagDescUpdateTime.Default.(func() time.Time)
+	// projecttag.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	projecttag.UpdateDefaultUpdateTime = projecttagDescUpdateTime.UpdateDefault.(func() time.Time)
+	// projecttagDescProjectID is the schema descriptor for project_id field.
+	projecttagDescProjectID := projecttagFields[1].Descriptor()
+	// projecttag.ProjectIDValidator is a validator for the "project_id" field. It is called by the builders before save.
+	projecttag.ProjectIDValidator = projecttagDescProjectID.Validators[0].(func(string) error)
+	// projecttagDescTagID is the schema descriptor for tag_id field.
+	projecttagDescTagID := projecttagFields[2].Descriptor()
+	// projecttag.TagIDValidator is a validator for the "tag_id" field. It is called by the builders before save.
+	projecttag.TagIDValidator = projecttagDescTagID.Validators[0].(func(string) error)
+	// projecttagDescID is the schema descriptor for id field.
+	projecttagDescID := projecttagFields[0].Descriptor()
+	// projecttag.DefaultID holds the default value on creation for the id field.
+	projecttag.DefaultID = projecttagDescID.Default.(func() string)
+	// projecttag.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	projecttag.IDValidator = projecttagDescID.Validators[0].(func(string) error)
 	sessionMixin := schema.Session{}.Mixin()
 	sessionMixinFields0 := sessionMixin[0].Fields()
 	_ = sessionMixinFields0
@@ -39,6 +139,39 @@ func init() {
 	session.DefaultID = sessionDescID.Default.(func() string)
 	// session.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	session.IDValidator = sessionDescID.Validators[0].(func(string) error)
+	tagMixin := schema.Tag{}.Mixin()
+	tagMixinFields0 := tagMixin[0].Fields()
+	_ = tagMixinFields0
+	tagFields := schema.Tag{}.Fields()
+	_ = tagFields
+	// tagDescCreateTime is the schema descriptor for create_time field.
+	tagDescCreateTime := tagMixinFields0[0].Descriptor()
+	// tag.DefaultCreateTime holds the default value on creation for the create_time field.
+	tag.DefaultCreateTime = tagDescCreateTime.Default.(func() time.Time)
+	// tagDescUpdateTime is the schema descriptor for update_time field.
+	tagDescUpdateTime := tagMixinFields0[1].Descriptor()
+	// tag.DefaultUpdateTime holds the default value on creation for the update_time field.
+	tag.DefaultUpdateTime = tagDescUpdateTime.Default.(func() time.Time)
+	// tag.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	tag.UpdateDefaultUpdateTime = tagDescUpdateTime.UpdateDefault.(func() time.Time)
+	// tagDescName is the schema descriptor for name field.
+	tagDescName := tagFields[1].Descriptor()
+	// tag.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	tag.NameValidator = tagDescName.Validators[0].(func(string) error)
+	// tagDescSlug is the schema descriptor for slug field.
+	tagDescSlug := tagFields[2].Descriptor()
+	// tag.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	tag.SlugValidator = tagDescSlug.Validators[0].(func(string) error)
+	// tagDescUsageCount is the schema descriptor for usage_count field.
+	tagDescUsageCount := tagFields[6].Descriptor()
+	// tag.DefaultUsageCount holds the default value on creation for the usage_count field.
+	tag.DefaultUsageCount = tagDescUsageCount.Default.(int)
+	// tagDescID is the schema descriptor for id field.
+	tagDescID := tagFields[0].Descriptor()
+	// tag.DefaultID holds the default value on creation for the id field.
+	tag.DefaultID = tagDescID.Default.(func() string)
+	// tag.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	tag.IDValidator = tagDescID.Validators[0].(func(string) error)
 	userMixin := schema.User{}.Mixin()
 	userHooks := schema.User{}.Hooks()
 	user.Hooks[0] = userHooks[0]
@@ -81,7 +214,7 @@ func init() {
 	// user.LastNameValidator is a validator for the "last_name" field. It is called by the builders before save.
 	user.LastNameValidator = userDescLastName.Validators[0].(func(string) error)
 	// userDescFailedLoginAttempts is the schema descriptor for failed_login_attempts field.
-	userDescFailedLoginAttempts := userFields[11].Descriptor()
+	userDescFailedLoginAttempts := userFields[13].Descriptor()
 	// user.DefaultFailedLoginAttempts holds the default value on creation for the failed_login_attempts field.
 	user.DefaultFailedLoginAttempts = userDescFailedLoginAttempts.Default.(int)
 	// userDescID is the schema descriptor for id field.
@@ -90,6 +223,39 @@ func init() {
 	user.DefaultID = userDescID.Default.(func() string)
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	user.IDValidator = userDescID.Validators[0].(func(string) error)
+	usertechnologyMixin := schema.UserTechnology{}.Mixin()
+	usertechnologyMixinFields0 := usertechnologyMixin[0].Fields()
+	_ = usertechnologyMixinFields0
+	usertechnologyFields := schema.UserTechnology{}.Fields()
+	_ = usertechnologyFields
+	// usertechnologyDescCreateTime is the schema descriptor for create_time field.
+	usertechnologyDescCreateTime := usertechnologyMixinFields0[0].Descriptor()
+	// usertechnology.DefaultCreateTime holds the default value on creation for the create_time field.
+	usertechnology.DefaultCreateTime = usertechnologyDescCreateTime.Default.(func() time.Time)
+	// usertechnologyDescUpdateTime is the schema descriptor for update_time field.
+	usertechnologyDescUpdateTime := usertechnologyMixinFields0[1].Descriptor()
+	// usertechnology.DefaultUpdateTime holds the default value on creation for the update_time field.
+	usertechnology.DefaultUpdateTime = usertechnologyDescUpdateTime.Default.(func() time.Time)
+	// usertechnology.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	usertechnology.UpdateDefaultUpdateTime = usertechnologyDescUpdateTime.UpdateDefault.(func() time.Time)
+	// usertechnologyDescUserID is the schema descriptor for user_id field.
+	usertechnologyDescUserID := usertechnologyFields[1].Descriptor()
+	// usertechnology.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	usertechnology.UserIDValidator = usertechnologyDescUserID.Validators[0].(func(string) error)
+	// usertechnologyDescTechnologyID is the schema descriptor for technology_id field.
+	usertechnologyDescTechnologyID := usertechnologyFields[2].Descriptor()
+	// usertechnology.TechnologyIDValidator is a validator for the "technology_id" field. It is called by the builders before save.
+	usertechnology.TechnologyIDValidator = usertechnologyDescTechnologyID.Validators[0].(func(string) error)
+	// usertechnologyDescIsPrimary is the schema descriptor for is_primary field.
+	usertechnologyDescIsPrimary := usertechnologyFields[5].Descriptor()
+	// usertechnology.DefaultIsPrimary holds the default value on creation for the is_primary field.
+	usertechnology.DefaultIsPrimary = usertechnologyDescIsPrimary.Default.(bool)
+	// usertechnologyDescID is the schema descriptor for id field.
+	usertechnologyDescID := usertechnologyFields[0].Descriptor()
+	// usertechnology.DefaultID holds the default value on creation for the id field.
+	usertechnology.DefaultID = usertechnologyDescID.Default.(func() string)
+	// usertechnology.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	usertechnology.IDValidator = usertechnologyDescID.Validators[0].(func(string) error)
 }
 
 const (

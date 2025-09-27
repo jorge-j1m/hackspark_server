@@ -12,6 +12,8 @@ import (
 	"github.com/jorge-j1m/hackspark_server/internal/infrastructure/config"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler/auth"
+	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler/projects"
+	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler/tags"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/handler/users"
 	cMiddleware "github.com/jorge-j1m/hackspark_server/internal/interfaces/http/middleware"
 )
@@ -46,7 +48,9 @@ func New(cfg *config.Config, client *ent.Client) http.Handler {
 	// Health check endpoint
 	healthHandler := handler.NewHealthHandler(cfg)
 	authHandler := auth.NewAuthHandler(client)
-	usersHandler := users.NewUsersHandler()
+	usersHandler := users.NewUsersHandler(client)
+	projectsHandler := projects.NewProjectsHandler(client)
+	tagsHandler := tags.NewTagsHandler(client)
 
 	r.Get("/health", healthHandler.Handle)
 
@@ -63,8 +67,42 @@ func New(cfg *config.Config, client *ent.Client) http.Handler {
 
 			// User routes
 			r.Route("/users", func(r chi.Router) {
-				r.Use(authMiddleware.Authenticate)
-				r.Get("/me", usersHandler.Me)
+				r.Get("/{username}", usersHandler.GetUserProfile)
+				r.Get("/{username}/technologies", usersHandler.GetUserTechnologies)
+
+				r.Group(func(r chi.Router) {
+					r.Use(authMiddleware.Authenticate)
+					r.Get("/me", usersHandler.Me)
+					r.Post("/technologies", usersHandler.AddUserTechnology)
+					r.Put("/technologies/{slug}", usersHandler.UpdateUserTechnology)
+					r.Delete("/technologies/{slug}", usersHandler.RemoveUserTechnology)
+				})
+			})
+
+			// Project routes
+			r.Route("/projects", func(r chi.Router) {
+				r.Get("/", projectsHandler.ListProjects)
+				r.Get("/{id}", projectsHandler.GetProject)
+				r.Get("/{id}/likes", projectsHandler.GetProjectLikes)
+
+				r.Group(func(r chi.Router) {
+					r.Use(authMiddleware.Authenticate)
+					r.Post("/", projectsHandler.CreateProject)
+					r.Put("/{id}", projectsHandler.UpdateProject)
+					r.Delete("/{id}", projectsHandler.DeleteProject)
+					r.Post("/{id}/like", projectsHandler.LikeProject)
+					r.Delete("/{id}/like", projectsHandler.UnlikeProject)
+					r.Get("/{id}/liked", projectsHandler.CheckProjectLiked)
+				})
+			})
+
+			// Tag routes
+			r.Route("/tags", func(r chi.Router) {
+				r.Get("/", tagsHandler.ListTags)
+				r.Get("/trending", tagsHandler.GetTrendingTags)
+				r.Get("/{slug}", tagsHandler.GetTag)
+				r.Get("/{slug}/projects", tagsHandler.GetTagProjects)
+				r.Get("/{slug}/users", tagsHandler.GetTagUsers)
 			})
 		})
 	})

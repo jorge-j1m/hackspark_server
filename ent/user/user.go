@@ -32,6 +32,10 @@ const (
 	FieldFirstName = "first_name"
 	// FieldLastName holds the string denoting the last_name field in the database.
 	FieldLastName = "last_name"
+	// FieldBio holds the string denoting the bio field in the database.
+	FieldBio = "bio"
+	// FieldAvatarURL holds the string denoting the avatar_url field in the database.
+	FieldAvatarURL = "avatar_url"
 	// FieldLastLoginAt holds the string denoting the last_login_at field in the database.
 	FieldLastLoginAt = "last_login_at"
 	// FieldAccountStatus holds the string denoting the account_status field in the database.
@@ -48,6 +52,18 @@ const (
 	FieldResetPasswordTokenExpiryAt = "reset_password_token_expiry_at"
 	// EdgeSessions holds the string denoting the sessions edge name in mutations.
 	EdgeSessions = "sessions"
+	// EdgeOwnedProjects holds the string denoting the owned_projects edge name in mutations.
+	EdgeOwnedProjects = "owned_projects"
+	// EdgeLikedProjects holds the string denoting the liked_projects edge name in mutations.
+	EdgeLikedProjects = "liked_projects"
+	// EdgeTechnologies holds the string denoting the technologies edge name in mutations.
+	EdgeTechnologies = "technologies"
+	// EdgeCreatedTags holds the string denoting the created_tags edge name in mutations.
+	EdgeCreatedTags = "created_tags"
+	// EdgeLikes holds the string denoting the likes edge name in mutations.
+	EdgeLikes = "likes"
+	// EdgeUserTechnologies holds the string denoting the user_technologies edge name in mutations.
+	EdgeUserTechnologies = "user_technologies"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// SessionsTable is the table that holds the sessions relation/edge.
@@ -57,6 +73,44 @@ const (
 	SessionsInverseTable = "sessions"
 	// SessionsColumn is the table column denoting the sessions relation/edge.
 	SessionsColumn = "user_sessions"
+	// OwnedProjectsTable is the table that holds the owned_projects relation/edge.
+	OwnedProjectsTable = "projects"
+	// OwnedProjectsInverseTable is the table name for the Project entity.
+	// It exists in this package in order to avoid circular dependency with the "project" package.
+	OwnedProjectsInverseTable = "projects"
+	// OwnedProjectsColumn is the table column denoting the owned_projects relation/edge.
+	OwnedProjectsColumn = "user_owned_projects"
+	// LikedProjectsTable is the table that holds the liked_projects relation/edge. The primary key declared below.
+	LikedProjectsTable = "likes"
+	// LikedProjectsInverseTable is the table name for the Project entity.
+	// It exists in this package in order to avoid circular dependency with the "project" package.
+	LikedProjectsInverseTable = "projects"
+	// TechnologiesTable is the table that holds the technologies relation/edge. The primary key declared below.
+	TechnologiesTable = "user_technologies"
+	// TechnologiesInverseTable is the table name for the Tag entity.
+	// It exists in this package in order to avoid circular dependency with the "tag" package.
+	TechnologiesInverseTable = "tags"
+	// CreatedTagsTable is the table that holds the created_tags relation/edge.
+	CreatedTagsTable = "tags"
+	// CreatedTagsInverseTable is the table name for the Tag entity.
+	// It exists in this package in order to avoid circular dependency with the "tag" package.
+	CreatedTagsInverseTable = "tags"
+	// CreatedTagsColumn is the table column denoting the created_tags relation/edge.
+	CreatedTagsColumn = "user_created_tags"
+	// LikesTable is the table that holds the likes relation/edge.
+	LikesTable = "likes"
+	// LikesInverseTable is the table name for the Like entity.
+	// It exists in this package in order to avoid circular dependency with the "like" package.
+	LikesInverseTable = "likes"
+	// LikesColumn is the table column denoting the likes relation/edge.
+	LikesColumn = "user_id"
+	// UserTechnologiesTable is the table that holds the user_technologies relation/edge.
+	UserTechnologiesTable = "user_technologies"
+	// UserTechnologiesInverseTable is the table name for the UserTechnology entity.
+	// It exists in this package in order to avoid circular dependency with the "usertechnology" package.
+	UserTechnologiesInverseTable = "user_technologies"
+	// UserTechnologiesColumn is the table column denoting the user_technologies relation/edge.
+	UserTechnologiesColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -70,6 +124,8 @@ var Columns = []string{
 	FieldPassword,
 	FieldFirstName,
 	FieldLastName,
+	FieldBio,
+	FieldAvatarURL,
 	FieldLastLoginAt,
 	FieldAccountStatus,
 	FieldVerificationToken,
@@ -78,6 +134,15 @@ var Columns = []string{
 	FieldResetPasswordToken,
 	FieldResetPasswordTokenExpiryAt,
 }
+
+var (
+	// LikedProjectsPrimaryKey and LikedProjectsColumn2 are the table columns denoting the
+	// primary key for the liked_projects relation (M2M).
+	LikedProjectsPrimaryKey = []string{"user_id", "project_id"}
+	// TechnologiesPrimaryKey and TechnologiesColumn2 are the table columns denoting the
+	// primary key for the technologies relation (M2M).
+	TechnologiesPrimaryKey = []string{"user_id", "technology_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -197,6 +262,16 @@ func ByLastName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastName, opts...).ToFunc()
 }
 
+// ByBio orders the results by the bio field.
+func ByBio(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBio, opts...).ToFunc()
+}
+
+// ByAvatarURL orders the results by the avatar_url field.
+func ByAvatarURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAvatarURL, opts...).ToFunc()
+}
+
 // ByLastLoginAt orders the results by the last_login_at field.
 func ByLastLoginAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastLoginAt, opts...).ToFunc()
@@ -245,10 +320,136 @@ func BySessions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newSessionsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByOwnedProjectsCount orders the results by owned_projects count.
+func ByOwnedProjectsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newOwnedProjectsStep(), opts...)
+	}
+}
+
+// ByOwnedProjects orders the results by owned_projects terms.
+func ByOwnedProjects(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOwnedProjectsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByLikedProjectsCount orders the results by liked_projects count.
+func ByLikedProjectsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newLikedProjectsStep(), opts...)
+	}
+}
+
+// ByLikedProjects orders the results by liked_projects terms.
+func ByLikedProjects(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLikedProjectsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTechnologiesCount orders the results by technologies count.
+func ByTechnologiesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTechnologiesStep(), opts...)
+	}
+}
+
+// ByTechnologies orders the results by technologies terms.
+func ByTechnologies(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTechnologiesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCreatedTagsCount orders the results by created_tags count.
+func ByCreatedTagsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCreatedTagsStep(), opts...)
+	}
+}
+
+// ByCreatedTags orders the results by created_tags terms.
+func ByCreatedTags(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCreatedTagsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByLikesCount orders the results by likes count.
+func ByLikesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newLikesStep(), opts...)
+	}
+}
+
+// ByLikes orders the results by likes terms.
+func ByLikes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLikesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByUserTechnologiesCount orders the results by user_technologies count.
+func ByUserTechnologiesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newUserTechnologiesStep(), opts...)
+	}
+}
+
+// ByUserTechnologies orders the results by user_technologies terms.
+func ByUserTechnologies(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUserTechnologiesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newSessionsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SessionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SessionsTable, SessionsColumn),
+	)
+}
+func newOwnedProjectsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(OwnedProjectsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, OwnedProjectsTable, OwnedProjectsColumn),
+	)
+}
+func newLikedProjectsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LikedProjectsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, LikedProjectsTable, LikedProjectsPrimaryKey...),
+	)
+}
+func newTechnologiesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TechnologiesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, TechnologiesTable, TechnologiesPrimaryKey...),
+	)
+}
+func newCreatedTagsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CreatedTagsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CreatedTagsTable, CreatedTagsColumn),
+	)
+}
+func newLikesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LikesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, true, LikesTable, LikesColumn),
+	)
+}
+func newUserTechnologiesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UserTechnologiesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, true, UserTechnologiesTable, UserTechnologiesColumn),
 	)
 }
