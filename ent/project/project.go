@@ -121,6 +121,8 @@ var (
 	UpdateDefaultUpdateTime func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	DescriptionValidator func(string) error
 	// DefaultLikeCount holds the default value on creation for the "like_count" field.
 	DefaultLikeCount int
 	// DefaultStarCount holds the default value on creation for the "star_count" field.

@@ -67,6 +67,10 @@ func init() {
 	projectDescName := projectFields[1].Descriptor()
 	// project.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	project.NameValidator = projectDescName.Validators[0].(func(string) error)
+	// projectDescDescription is the schema descriptor for description field.
+	projectDescDescription := projectFields[2].Descriptor()
+	// project.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	project.DescriptionValidator = projectDescDescription.Validators[0].(func(string) error)
 	// projectDescLikeCount is the schema descriptor for like_count field.
 	projectDescLikeCount := projectFields[3].Descriptor()
 	// project.DefaultLikeCount holds the default value on creation for the like_count field.

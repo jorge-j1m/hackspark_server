@@ -54,7 +54,7 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
-		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString},
 		{Name: "like_count", Type: field.TypeInt, Default: 0},
 		{Name: "star_count", Type: field.TypeInt, Default: 0},
 		{Name: "user_owned_projects", Type: field.TypeString},

@@ -64,14 +64,6 @@ func (_c *ProjectCreate) SetDescription(v string) *ProjectCreate {
 	return _c
 }
 
-// SetNillableDescription sets the "description" field if the given value is not nil.
-func (_c *ProjectCreate) SetNillableDescription(v *string) *ProjectCreate {
-	if v != nil {
-		_c.SetDescription(*v)
-	}
-	return _c
-}
-
 // SetLikeCount sets the "like_count" field.
 func (_c *ProjectCreate) SetLikeCount(v int) *ProjectCreate {
 	_c.mutation.SetLikeCount(v)
@@ -258,6 +250,14 @@ func (_c *ProjectCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Project.name": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.Description(); !ok {
+		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Project.description"`)}
+	}
+	if v, ok := _c.mutation.Description(); ok {
+		if err := project.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Project.description": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.LikeCount(); !ok {
 		return &ValidationError{Name: "like_count", err: errors.New(`ent: missing required field "Project.like_count"`)}
 	}
@@ -321,7 +321,7 @@ func (_c *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(project.FieldDescription, field.TypeString, value)
-		_node.Description = &value
+		_node.Description = value
 	}
 	if value, ok := _c.mutation.LikeCount(); ok {
 		_spec.SetField(project.FieldLikeCount, field.TypeInt, value)

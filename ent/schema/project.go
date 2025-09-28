@@ -34,8 +34,7 @@ func (Project) Fields() []ent.Field {
 		field.String("name").
 			NotEmpty(),
 		field.String("description").
-			Optional().
-			Nillable(),
+			NotEmpty(),
 		field.Int("like_count").
 			Default(0),
 		field.Int("star_count").

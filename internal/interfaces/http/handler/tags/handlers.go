@@ -114,6 +114,7 @@ func (h *TagsHandler) GetTagProjects(w http.ResponseWriter, r *http.Request) {
 
 	projects, err := tag.QueryProjects().
 		WithOwner().
+		WithTags().
 		Limit(limit).
 		Offset(offset).
 		Order(ent.Desc(project.FieldCreateTime)).
@@ -125,10 +126,10 @@ func (h *TagsHandler) GetTagProjects(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type ProjectResponse struct {
-		ID          string  `json:"id"`
-		Name        string  `json:"name"`
-		Description *string `json:"description"`
-		Owner       *struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Owner       struct {
 			ID       string `json:"id"`
 			Username string `json:"username"`
 		} `json:"owner"`
@@ -146,7 +147,7 @@ func (h *TagsHandler) GetTagProjects(w http.ResponseWriter, r *http.Request) {
 			CreatedAt:   p.CreateTime.Format("2006-01-02T15:04:05Z"),
 		}
 		if p.Edges.Owner != nil {
-			resp.Owner = &struct {
+			resp.Owner = struct {
 				ID       string `json:"id"`
 				Username string `json:"username"`
 			}{

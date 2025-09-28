@@ -896,7 +896,7 @@ func (m *ProjectMutation) Description() (r string, exists bool) {
 // OldDescription returns the old "description" field's value of the Project entity.
 // If the Project object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProjectMutation) OldDescription(ctx context.Context) (v *string, err error) {
+func (m *ProjectMutation) OldDescription(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
 	}
@@ -910,22 +910,9 @@ func (m *ProjectMutation) OldDescription(ctx context.Context) (v *string, err er
 	return oldValue.Description, nil
 }
 
-// ClearDescription clears the value of the "description" field.
-func (m *ProjectMutation) ClearDescription() {
-	m.description = nil
-	m.clearedFields[project.FieldDescription] = struct{}{}
-}
-
-// DescriptionCleared returns if the "description" field was cleared in this mutation.
-func (m *ProjectMutation) DescriptionCleared() bool {
-	_, ok := m.clearedFields[project.FieldDescription]
-	return ok
-}
-
 // ResetDescription resets all changes to the "description" field.
 func (m *ProjectMutation) ResetDescription() {
 	m.description = nil
-	delete(m.clearedFields, project.FieldDescription)
 }
 
 // SetLikeCount sets the "like_count" field.
@@ -1496,11 +1483,7 @@ func (m *ProjectMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ProjectMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(project.FieldDescription) {
-		fields = append(fields, project.FieldDescription)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1513,11 +1496,6 @@ func (m *ProjectMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ProjectMutation) ClearField(name string) error {
-	switch name {
-	case project.FieldDescription:
-		m.ClearDescription()
-		return nil
-	}
 	return fmt.Errorf("unknown Project nullable field %s", name)
 }
 

@@ -22,7 +22,7 @@ import (
 
 type CreateProjectRequest struct {
 	Name        string   `json:"name"`
-	Description *string  `json:"description"`
+	Description string   `json:"description"`
 	Tags        []string `json:"tags"`
 }
 
@@ -33,23 +33,23 @@ func (r CreateProjectRequest) Validate() error {
 	if len(r.Name) > 255 {
 		return errors.ErrInvalidRequest
 	}
-	if r.Description != nil && len(*r.Description) > 1000 {
+	if len(r.Description) > 1000 {
 		return errors.ErrInvalidRequest
 	}
 	return nil
 }
 
 type UpdateProjectRequest struct {
-	Name        *string  `json:"name"`
-	Description *string  `json:"description"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
 	Tags        []string `json:"tags"`
 }
 
 func (r UpdateProjectRequest) Validate() error {
-	if r.Name != nil && (*r.Name == "" || len(*r.Name) > 255) {
+	if r.Name == "" || len(r.Name) > 255 {
 		return errors.ErrInvalidRequest
 	}
-	if r.Description != nil && len(*r.Description) > 1000 {
+	if len(r.Description) > 1000 {
 		return errors.ErrInvalidRequest
 	}
 	return nil
@@ -58,11 +58,11 @@ func (r UpdateProjectRequest) Validate() error {
 type ProjectResponse struct {
 	ID          string   `json:"id"`
 	Name        string   `json:"name"`
-	Description *string  `json:"description"`
+	Description string   `json:"description"`
 	LikeCount   int      `json:"like_count"`
 	StarCount   int      `json:"star_count"`
 	Tags        []string `json:"tags"`
-	Owner       *struct {
+	Owner       struct {
 		ID       string `json:"id"`
 		Username string `json:"username"`
 	} `json:"owner"`
@@ -94,7 +94,7 @@ func (h *ProjectsHandler) CreateProject(w http.ResponseWriter, r *http.Request) 
 
 	project, err := h.client.Project.Create().
 		SetName(req.Name).
-		SetNillableDescription(req.Description).
+		SetDescription(req.Description).
 		SetOwnerID(userID).
 		Save(ctx)
 	if err != nil {
@@ -184,11 +184,11 @@ func (h *ProjectsHandler) UpdateProject(w http.ResponseWriter, r *http.Request) 
 	}
 
 	updateQuery := h.client.Project.UpdateOneID(projectID)
-	if req.Name != nil {
-		updateQuery = updateQuery.SetName(*req.Name)
+	if req.Name != "" {
+		updateQuery = updateQuery.SetName(req.Name)
 	}
-	if req.Description != nil {
-		updateQuery = updateQuery.SetNillableDescription(req.Description)
+	if req.Description != "" {
+		updateQuery = updateQuery.SetDescription(req.Description)
 	}
 
 	if _, err := updateQuery.Save(ctx); err != nil {
@@ -197,7 +197,7 @@ func (h *ProjectsHandler) UpdateProject(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if req.Tags != nil {
+	if len(req.Tags) > 0 {
 		if err := h.replaceProjectTags(ctx, projectID, req.Tags); err != nil {
 			log.Error(ctx).Err(err).Msg("Failed to update project tags")
 		}
@@ -269,11 +269,11 @@ func (h *ProjectsHandler) ListProjects(w http.ResponseWriter, r *http.Request) {
 
 	if tagsParam := r.URL.Query().Get("tags"); tagsParam != "" {
 		tagSlugs := strings.Split(tagsParam, ",")
-		query = query.Where(project.HasTagsWith(tag.SlugIn(tagSlugs...)))
+		query = query.Where(project.HasTagsWith(tag.SlugIn(tagSlugs...))).WithTags().WithOwner()
 	}
 
 	if ownerParam := r.URL.Query().Get("owner"); ownerParam != "" {
-		query = query.Where(project.HasOwnerWith(user.Username(ownerParam)))
+		query = query.Where(project.HasOwnerWith(user.Username(ownerParam))).WithTags().WithOwner()
 	}
 
 	projects, err := query.All(ctx)
@@ -318,7 +318,7 @@ func (h *ProjectsHandler) buildProjectResponse(p *ent.Project) ProjectResponse {
 	}
 
 	if p.Edges.Owner != nil {
-		resp.Owner = &struct {
+		resp.Owner = struct {
 			ID       string `json:"id"`
 			Username string `json:"username"`
 		}{

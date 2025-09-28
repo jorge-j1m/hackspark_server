@@ -25,7 +25,7 @@ type Project struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
-	Description *string `json:"description,omitempty"`
+	Description string `json:"description,omitempty"`
 	// LikeCount holds the value of the "like_count" field.
 	LikeCount int `json:"like_count,omitempty"`
 	// StarCount holds the value of the "star_count" field.
@@ -157,8 +157,7 @@ func (_m *Project) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
-				_m.Description = new(string)
-				*_m.Description = value.String
+				_m.Description = value.String
 			}
 		case project.FieldLikeCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -249,10 +248,8 @@ func (_m *Project) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
-	if v := _m.Description; v != nil {
-		builder.WriteString("description=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString("description=")
+	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
 	builder.WriteString("like_count=")
 	builder.WriteString(fmt.Sprintf("%v", _m.LikeCount))

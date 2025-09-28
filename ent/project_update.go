@@ -66,12 +66,6 @@ func (_u *ProjectUpdate) SetNillableDescription(v *string) *ProjectUpdate {
 	return _u
 }
 
-// ClearDescription clears the value of the "description" field.
-func (_u *ProjectUpdate) ClearDescription() *ProjectUpdate {
-	_u.mutation.ClearDescription()
-	return _u
-}
-
 // SetLikeCount sets the "like_count" field.
 func (_u *ProjectUpdate) SetLikeCount(v int) *ProjectUpdate {
 	_u.mutation.ResetLikeCount()
@@ -323,6 +317,11 @@ func (_u *ProjectUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Project.name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Description(); ok {
+		if err := project.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Project.description": %w`, err)}
+		}
+	}
 	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Project.owner"`)
 	}
@@ -349,9 +348,6 @@ func (_u *ProjectUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(project.FieldDescription, field.TypeString, value)
-	}
-	if _u.mutation.DescriptionCleared() {
-		_spec.ClearField(project.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.LikeCount(); ok {
 		_spec.SetField(project.FieldLikeCount, field.TypeInt, value)
@@ -670,12 +666,6 @@ func (_u *ProjectUpdateOne) SetNillableDescription(v *string) *ProjectUpdateOne 
 	return _u
 }
 
-// ClearDescription clears the value of the "description" field.
-func (_u *ProjectUpdateOne) ClearDescription() *ProjectUpdateOne {
-	_u.mutation.ClearDescription()
-	return _u
-}
-
 // SetLikeCount sets the "like_count" field.
 func (_u *ProjectUpdateOne) SetLikeCount(v int) *ProjectUpdateOne {
 	_u.mutation.ResetLikeCount()
@@ -940,6 +930,11 @@ func (_u *ProjectUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Project.name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Description(); ok {
+		if err := project.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Project.description": %w`, err)}
+		}
+	}
 	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Project.owner"`)
 	}
@@ -983,9 +978,6 @@ func (_u *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err er
 	}
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(project.FieldDescription, field.TypeString, value)
-	}
-	if _u.mutation.DescriptionCleared() {
-		_spec.ClearField(project.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.LikeCount(); ok {
 		_spec.SetField(project.FieldLikeCount, field.TypeInt, value)

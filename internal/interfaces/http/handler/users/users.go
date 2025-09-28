@@ -32,12 +32,12 @@ type TechnologyResponse struct {
 }
 
 type ProjectResponse struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	Description *string `json:"description"`
-	LikeCount   int     `json:"like_count"`
-	StarCount   int     `json:"star_count"`
-	AddedAt     string  `json:"added_at"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	LikeCount   int    `json:"like_count"`
+	StarCount   int    `json:"star_count"`
+	AddedAt     string `json:"added_at"`
 }
 
 func NewUsersHandler(client *ent.Client) *UsersHandler {
