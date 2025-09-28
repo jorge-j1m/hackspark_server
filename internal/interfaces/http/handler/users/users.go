@@ -25,9 +25,10 @@ type CreatedUser struct {
 }
 
 type TechnologyResponse struct {
-	Name       string `json:"name"`
-	Slug       string `json:"slug"`
-	SkillLevel string `json:"skill_level"`
+	Name            string   `json:"name"`
+	Slug            string   `json:"slug"`
+	SkillLevel      string   `json:"skill_level"`
+	YearsExperience *float64 `json:"years_experience"`
 }
 
 type ProjectResponse struct {
@@ -77,9 +78,10 @@ func convertUserTechnologiesToResponse(userTechs []*ent.UserTechnology) []Techno
 	techResponses := make([]TechnologyResponse, len(userTechs))
 	for i, tech := range userTechs {
 		techResponses[i] = TechnologyResponse{
-			Name:       tech.Edges.Technology.Name,
-			Slug:       tech.Edges.Technology.Slug,
-			SkillLevel: string(tech.SkillLevel),
+			Name:            tech.Edges.Technology.Name,
+			Slug:            tech.Edges.Technology.Slug,
+			SkillLevel:      string(tech.SkillLevel),
+			YearsExperience: tech.YearsExperience,
 		}
 	}
 	return techResponses
