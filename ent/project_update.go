@@ -72,20 +72,6 @@ func (_u *ProjectUpdate) ClearDescription() *ProjectUpdate {
 	return _u
 }
 
-// SetIsPublic sets the "is_public" field.
-func (_u *ProjectUpdate) SetIsPublic(v bool) *ProjectUpdate {
-	_u.mutation.SetIsPublic(v)
-	return _u
-}
-
-// SetNillableIsPublic sets the "is_public" field if the given value is not nil.
-func (_u *ProjectUpdate) SetNillableIsPublic(v *bool) *ProjectUpdate {
-	if v != nil {
-		_u.SetIsPublic(*v)
-	}
-	return _u
-}
-
 // SetLikeCount sets the "like_count" field.
 func (_u *ProjectUpdate) SetLikeCount(v int) *ProjectUpdate {
 	_u.mutation.ResetLikeCount()
@@ -366,9 +352,6 @@ func (_u *ProjectUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(project.FieldDescription, field.TypeString)
-	}
-	if value, ok := _u.mutation.IsPublic(); ok {
-		_spec.SetField(project.FieldIsPublic, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.LikeCount(); ok {
 		_spec.SetField(project.FieldLikeCount, field.TypeInt, value)
@@ -693,20 +676,6 @@ func (_u *ProjectUpdateOne) ClearDescription() *ProjectUpdateOne {
 	return _u
 }
 
-// SetIsPublic sets the "is_public" field.
-func (_u *ProjectUpdateOne) SetIsPublic(v bool) *ProjectUpdateOne {
-	_u.mutation.SetIsPublic(v)
-	return _u
-}
-
-// SetNillableIsPublic sets the "is_public" field if the given value is not nil.
-func (_u *ProjectUpdateOne) SetNillableIsPublic(v *bool) *ProjectUpdateOne {
-	if v != nil {
-		_u.SetIsPublic(*v)
-	}
-	return _u
-}
-
 // SetLikeCount sets the "like_count" field.
 func (_u *ProjectUpdateOne) SetLikeCount(v int) *ProjectUpdateOne {
 	_u.mutation.ResetLikeCount()
@@ -1017,9 +986,6 @@ func (_u *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err er
 	}
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(project.FieldDescription, field.TypeString)
-	}
-	if value, ok := _u.mutation.IsPublic(); ok {
-		_spec.SetField(project.FieldIsPublic, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.LikeCount(); ok {
 		_spec.SetField(project.FieldLikeCount, field.TypeInt, value)

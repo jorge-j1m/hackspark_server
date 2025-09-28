@@ -55,7 +55,6 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "is_public", Type: field.TypeBool, Default: true},
 		{Name: "like_count", Type: field.TypeInt, Default: 0},
 		{Name: "star_count", Type: field.TypeInt, Default: 0},
 		{Name: "user_owned_projects", Type: field.TypeString},
@@ -68,26 +67,21 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "projects_users_owned_projects",
-				Columns:    []*schema.Column{ProjectsColumns[8]},
+				Columns:    []*schema.Column{ProjectsColumns[7]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "project_is_public",
+				Name:    "project_like_count",
 				Unique:  false,
 				Columns: []*schema.Column{ProjectsColumns[5]},
 			},
 			{
-				Name:    "project_like_count",
-				Unique:  false,
-				Columns: []*schema.Column{ProjectsColumns[6]},
-			},
-			{
 				Name:    "project_user_owned_projects",
 				Unique:  false,
-				Columns: []*schema.Column{ProjectsColumns[8]},
+				Columns: []*schema.Column{ProjectsColumns[7]},
 			},
 		},
 	}
@@ -245,7 +239,6 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "skill_level", Type: field.TypeEnum, Enums: []string{"beginner", "intermediate", "expert"}, Default: "beginner"},
 		{Name: "years_experience", Type: field.TypeFloat64, Nullable: true},
-		{Name: "is_primary", Type: field.TypeBool, Default: false},
 		{Name: "user_id", Type: field.TypeString},
 		{Name: "technology_id", Type: field.TypeString},
 	}
@@ -257,13 +250,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "user_technologies_users_user",
-				Columns:    []*schema.Column{UserTechnologiesColumns[6]},
+				Columns:    []*schema.Column{UserTechnologiesColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "user_technologies_tags_technology",
-				Columns:    []*schema.Column{UserTechnologiesColumns[7]},
+				Columns:    []*schema.Column{UserTechnologiesColumns[6]},
 				RefColumns: []*schema.Column{TagsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -272,22 +265,17 @@ var (
 			{
 				Name:    "usertechnology_user_id_technology_id",
 				Unique:  true,
-				Columns: []*schema.Column{UserTechnologiesColumns[6], UserTechnologiesColumns[7]},
+				Columns: []*schema.Column{UserTechnologiesColumns[5], UserTechnologiesColumns[6]},
 			},
 			{
 				Name:    "usertechnology_technology_id",
 				Unique:  false,
-				Columns: []*schema.Column{UserTechnologiesColumns[7]},
+				Columns: []*schema.Column{UserTechnologiesColumns[6]},
 			},
 			{
 				Name:    "usertechnology_skill_level",
 				Unique:  false,
 				Columns: []*schema.Column{UserTechnologiesColumns[3]},
-			},
-			{
-				Name:    "usertechnology_is_primary",
-				Unique:  false,
-				Columns: []*schema.Column{UserTechnologiesColumns[5]},
 			},
 		},
 	}

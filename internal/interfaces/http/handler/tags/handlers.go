@@ -15,14 +15,14 @@ import (
 )
 
 type TagResponse struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Slug        string `json:"slug"`
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Slug        string  `json:"slug"`
 	Icon        *string `json:"icon"`
 	Description *string `json:"description"`
-	Category    string `json:"category"`
-	UsageCount  int    `json:"usage_count"`
-	CreatedAt   string `json:"created_at"`
+	Category    string  `json:"category"`
+	UsageCount  int     `json:"usage_count"`
+	CreatedAt   string  `json:"created_at"`
 }
 
 func (h *TagsHandler) ListTags(w http.ResponseWriter, r *http.Request) {
@@ -114,7 +114,6 @@ func (h *TagsHandler) GetTagProjects(w http.ResponseWriter, r *http.Request) {
 
 	projects, err := tag.QueryProjects().
 		WithOwner().
-		Where(project.IsPublic(true)).
 		Limit(limit).
 		Offset(offset).
 		Order(ent.Desc(project.FieldCreateTime)).
@@ -126,8 +125,8 @@ func (h *TagsHandler) GetTagProjects(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type ProjectResponse struct {
-		ID          string `json:"id"`
-		Name        string `json:"name"`
+		ID          string  `json:"id"`
+		Name        string  `json:"name"`
 		Description *string `json:"description"`
 		Owner       *struct {
 			ID       string `json:"id"`
@@ -192,8 +191,8 @@ func (h *TagsHandler) GetTagUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type UserResponse struct {
-		ID       string `json:"id"`
-		Username string `json:"username"`
+		ID       string  `json:"id"`
+		Username string  `json:"username"`
 		Bio      *string `json:"bio"`
 	}
 

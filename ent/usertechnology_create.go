@@ -90,20 +90,6 @@ func (_c *UserTechnologyCreate) SetNillableYearsExperience(v *float64) *UserTech
 	return _c
 }
 
-// SetIsPrimary sets the "is_primary" field.
-func (_c *UserTechnologyCreate) SetIsPrimary(v bool) *UserTechnologyCreate {
-	_c.mutation.SetIsPrimary(v)
-	return _c
-}
-
-// SetNillableIsPrimary sets the "is_primary" field if the given value is not nil.
-func (_c *UserTechnologyCreate) SetNillableIsPrimary(v *bool) *UserTechnologyCreate {
-	if v != nil {
-		_c.SetIsPrimary(*v)
-	}
-	return _c
-}
-
 // SetID sets the "id" field.
 func (_c *UserTechnologyCreate) SetID(v string) *UserTechnologyCreate {
 	_c.mutation.SetID(v)
@@ -175,10 +161,6 @@ func (_c *UserTechnologyCreate) defaults() {
 		v := usertechnology.DefaultSkillLevel
 		_c.mutation.SetSkillLevel(v)
 	}
-	if _, ok := _c.mutation.IsPrimary(); !ok {
-		v := usertechnology.DefaultIsPrimary
-		_c.mutation.SetIsPrimary(v)
-	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := usertechnology.DefaultID()
 		_c.mutation.SetID(v)
@@ -216,9 +198,6 @@ func (_c *UserTechnologyCreate) check() error {
 		if err := usertechnology.SkillLevelValidator(v); err != nil {
 			return &ValidationError{Name: "skill_level", err: fmt.Errorf(`ent: validator failed for field "UserTechnology.skill_level": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.IsPrimary(); !ok {
-		return &ValidationError{Name: "is_primary", err: errors.New(`ent: missing required field "UserTechnology.is_primary"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := usertechnology.IDValidator(v); err != nil {
@@ -281,10 +260,6 @@ func (_c *UserTechnologyCreate) createSpec() (*UserTechnology, *sqlgraph.CreateS
 	if value, ok := _c.mutation.YearsExperience(); ok {
 		_spec.SetField(usertechnology.FieldYearsExperience, field.TypeFloat64, value)
 		_node.YearsExperience = &value
-	}
-	if value, ok := _c.mutation.IsPrimary(); ok {
-		_spec.SetField(usertechnology.FieldIsPrimary, field.TypeBool, value)
-		_node.IsPrimary = value
 	}
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

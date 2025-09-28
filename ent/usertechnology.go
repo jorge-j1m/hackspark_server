@@ -31,8 +31,6 @@ type UserTechnology struct {
 	SkillLevel usertechnology.SkillLevel `json:"skill_level,omitempty"`
 	// YearsExperience holds the value of the "years_experience" field.
 	YearsExperience *float64 `json:"years_experience,omitempty"`
-	// IsPrimary holds the value of the "is_primary" field.
-	IsPrimary bool `json:"is_primary,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserTechnologyQuery when eager-loading is set.
 	Edges        UserTechnologyEdges `json:"edges"`
@@ -77,8 +75,6 @@ func (*UserTechnology) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case usertechnology.FieldIsPrimary:
-			values[i] = new(sql.NullBool)
 		case usertechnology.FieldYearsExperience:
 			values[i] = new(sql.NullFloat64)
 		case usertechnology.FieldID, usertechnology.FieldUserID, usertechnology.FieldTechnologyID, usertechnology.FieldSkillLevel:
@@ -142,12 +138,6 @@ func (_m *UserTechnology) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.YearsExperience = new(float64)
 				*_m.YearsExperience = value.Float64
-			}
-		case usertechnology.FieldIsPrimary:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field is_primary", values[i])
-			} else if value.Valid {
-				_m.IsPrimary = value.Bool
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -214,9 +204,6 @@ func (_m *UserTechnology) String() string {
 		builder.WriteString("years_experience=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	builder.WriteString(", ")
-	builder.WriteString("is_primary=")
-	builder.WriteString(fmt.Sprintf("%v", _m.IsPrimary))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -59,8 +59,7 @@ func main() {
 		fmt.Printf("User: %s %s\n", user.FirstName, user.LastName)
 		fmt.Printf("Technology: %s (%s)\n", tech.Name, tech.Category)
 		fmt.Printf("Skill Level: %s\n", ut.SkillLevel)
-		fmt.Printf("Is Primary: %t\n", ut.IsPrimary)
-		fmt.Printf("Usage Count: %d\n", tech.UsageCount)
+		fmt.Printf("Years Experience: %f\n", *ut.YearsExperience)
 		fmt.Println("---")
 	}
 

@@ -26,8 +26,6 @@ type Project struct {
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description *string `json:"description,omitempty"`
-	// IsPublic holds the value of the "is_public" field.
-	IsPublic bool `json:"is_public,omitempty"`
 	// LikeCount holds the value of the "like_count" field.
 	LikeCount int `json:"like_count,omitempty"`
 	// StarCount holds the value of the "star_count" field.
@@ -108,8 +106,6 @@ func (*Project) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case project.FieldIsPublic:
-			values[i] = new(sql.NullBool)
 		case project.FieldLikeCount, project.FieldStarCount:
 			values[i] = new(sql.NullInt64)
 		case project.FieldID, project.FieldName, project.FieldDescription:
@@ -163,12 +159,6 @@ func (_m *Project) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Description = new(string)
 				*_m.Description = value.String
-			}
-		case project.FieldIsPublic:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field is_public", values[i])
-			} else if value.Valid {
-				_m.IsPublic = value.Bool
 			}
 		case project.FieldLikeCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -263,9 +253,6 @@ func (_m *Project) String() string {
 		builder.WriteString("description=")
 		builder.WriteString(*v)
 	}
-	builder.WriteString(", ")
-	builder.WriteString("is_public=")
-	builder.WriteString(fmt.Sprintf("%v", _m.IsPublic))
 	builder.WriteString(", ")
 	builder.WriteString("like_count=")
 	builder.WriteString(fmt.Sprintf("%v", _m.LikeCount))

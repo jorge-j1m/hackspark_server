@@ -643,7 +643,6 @@ type ProjectMutation struct {
 	update_time         *time.Time
 	name                *string
 	description         *string
-	is_public           *bool
 	like_count          *int
 	addlike_count       *int
 	star_count          *int
@@ -927,42 +926,6 @@ func (m *ProjectMutation) DescriptionCleared() bool {
 func (m *ProjectMutation) ResetDescription() {
 	m.description = nil
 	delete(m.clearedFields, project.FieldDescription)
-}
-
-// SetIsPublic sets the "is_public" field.
-func (m *ProjectMutation) SetIsPublic(b bool) {
-	m.is_public = &b
-}
-
-// IsPublic returns the value of the "is_public" field in the mutation.
-func (m *ProjectMutation) IsPublic() (r bool, exists bool) {
-	v := m.is_public
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIsPublic returns the old "is_public" field's value of the Project entity.
-// If the Project object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProjectMutation) OldIsPublic(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIsPublic is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIsPublic requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIsPublic: %w", err)
-	}
-	return oldValue.IsPublic, nil
-}
-
-// ResetIsPublic resets all changes to the "is_public" field.
-func (m *ProjectMutation) ResetIsPublic() {
-	m.is_public = nil
 }
 
 // SetLikeCount sets the "like_count" field.
@@ -1366,7 +1329,7 @@ func (m *ProjectMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProjectMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 6)
 	if m.create_time != nil {
 		fields = append(fields, project.FieldCreateTime)
 	}
@@ -1378,9 +1341,6 @@ func (m *ProjectMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, project.FieldDescription)
-	}
-	if m.is_public != nil {
-		fields = append(fields, project.FieldIsPublic)
 	}
 	if m.like_count != nil {
 		fields = append(fields, project.FieldLikeCount)
@@ -1404,8 +1364,6 @@ func (m *ProjectMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case project.FieldDescription:
 		return m.Description()
-	case project.FieldIsPublic:
-		return m.IsPublic()
 	case project.FieldLikeCount:
 		return m.LikeCount()
 	case project.FieldStarCount:
@@ -1427,8 +1385,6 @@ func (m *ProjectMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldName(ctx)
 	case project.FieldDescription:
 		return m.OldDescription(ctx)
-	case project.FieldIsPublic:
-		return m.OldIsPublic(ctx)
 	case project.FieldLikeCount:
 		return m.OldLikeCount(ctx)
 	case project.FieldStarCount:
@@ -1469,13 +1425,6 @@ func (m *ProjectMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
-		return nil
-	case project.FieldIsPublic:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIsPublic(v)
 		return nil
 	case project.FieldLikeCount:
 		v, ok := value.(int)
@@ -1587,9 +1536,6 @@ func (m *ProjectMutation) ResetField(name string) error {
 		return nil
 	case project.FieldDescription:
 		m.ResetDescription()
-		return nil
-	case project.FieldIsPublic:
-		m.ResetIsPublic()
 		return nil
 	case project.FieldLikeCount:
 		m.ResetLikeCount()
@@ -6189,7 +6135,6 @@ type UserTechnologyMutation struct {
 	skill_level         *usertechnology.SkillLevel
 	years_experience    *float64
 	addyears_experience *float64
-	is_primary          *bool
 	clearedFields       map[string]struct{}
 	user                *string
 	cleareduser         bool
@@ -6554,42 +6499,6 @@ func (m *UserTechnologyMutation) ResetYearsExperience() {
 	delete(m.clearedFields, usertechnology.FieldYearsExperience)
 }
 
-// SetIsPrimary sets the "is_primary" field.
-func (m *UserTechnologyMutation) SetIsPrimary(b bool) {
-	m.is_primary = &b
-}
-
-// IsPrimary returns the value of the "is_primary" field in the mutation.
-func (m *UserTechnologyMutation) IsPrimary() (r bool, exists bool) {
-	v := m.is_primary
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIsPrimary returns the old "is_primary" field's value of the UserTechnology entity.
-// If the UserTechnology object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserTechnologyMutation) OldIsPrimary(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIsPrimary is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIsPrimary requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIsPrimary: %w", err)
-	}
-	return oldValue.IsPrimary, nil
-}
-
-// ResetIsPrimary resets all changes to the "is_primary" field.
-func (m *UserTechnologyMutation) ResetIsPrimary() {
-	m.is_primary = nil
-}
-
 // ClearUser clears the "user" edge to the User entity.
 func (m *UserTechnologyMutation) ClearUser() {
 	m.cleareduser = true
@@ -6678,7 +6587,7 @@ func (m *UserTechnologyMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserTechnologyMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 6)
 	if m.create_time != nil {
 		fields = append(fields, usertechnology.FieldCreateTime)
 	}
@@ -6696,9 +6605,6 @@ func (m *UserTechnologyMutation) Fields() []string {
 	}
 	if m.years_experience != nil {
 		fields = append(fields, usertechnology.FieldYearsExperience)
-	}
-	if m.is_primary != nil {
-		fields = append(fields, usertechnology.FieldIsPrimary)
 	}
 	return fields
 }
@@ -6720,8 +6626,6 @@ func (m *UserTechnologyMutation) Field(name string) (ent.Value, bool) {
 		return m.SkillLevel()
 	case usertechnology.FieldYearsExperience:
 		return m.YearsExperience()
-	case usertechnology.FieldIsPrimary:
-		return m.IsPrimary()
 	}
 	return nil, false
 }
@@ -6743,8 +6647,6 @@ func (m *UserTechnologyMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldSkillLevel(ctx)
 	case usertechnology.FieldYearsExperience:
 		return m.OldYearsExperience(ctx)
-	case usertechnology.FieldIsPrimary:
-		return m.OldIsPrimary(ctx)
 	}
 	return nil, fmt.Errorf("unknown UserTechnology field %s", name)
 }
@@ -6795,13 +6697,6 @@ func (m *UserTechnologyMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetYearsExperience(v)
-		return nil
-	case usertechnology.FieldIsPrimary:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIsPrimary(v)
 		return nil
 	}
 	return fmt.Errorf("unknown UserTechnology field %s", name)
@@ -6893,9 +6788,6 @@ func (m *UserTechnologyMutation) ResetField(name string) error {
 		return nil
 	case usertechnology.FieldYearsExperience:
 		m.ResetYearsExperience()
-		return nil
-	case usertechnology.FieldIsPrimary:
-		m.ResetIsPrimary()
 		return nil
 	}
 	return fmt.Errorf("unknown UserTechnology field %s", name)

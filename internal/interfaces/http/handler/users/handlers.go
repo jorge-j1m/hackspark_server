@@ -3,32 +3,17 @@ package users
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jorge-j1m/hackspark_server/ent"
 	"github.com/jorge-j1m/hackspark_server/ent/tag"
-	user_ent "github.com/jorge-j1m/hackspark_server/ent/user"
 	"github.com/jorge-j1m/hackspark_server/ent/usertechnology"
 	log "github.com/jorge-j1m/hackspark_server/internal/infrastructure/logger"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/middleware"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/response"
 	"github.com/jorge-j1m/hackspark_server/internal/pkg/common/errors"
 )
-
-// convertUserToResponse converts ent.User to CreatedUser, filtering out sensitive data
-func convertUserToResponse(user *ent.User) CreatedUser {
-	return CreatedUser{
-		UserData: UserData{
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			Username:  user.Username,
-		},
-		Id: user.ID,
-	}
-}
 
 func (u *UsersHandler) Me(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -39,65 +24,18 @@ func (u *UsersHandler) Me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userTechs, err := u.client.UserTechnology.
-		Query().
-		Where(
-			usertechnology.UserID(user.ID),
-		).
-		WithTechnology(). // Load related Tag/Technology data
-		All(ctx)
+	userTechs, err := u.getUserTechnologies(ctx, user.ID)
 	if err != nil {
 		log.Error(ctx).Err(err).Msg("Failed to get user technologies")
 		response.Error(w, errors.ErrInternalServerError)
 		return
 	}
 
-	type TechnologyResponse struct {
-		Name       string `json:"name"`
-		Slug       string `json:"slug"`
-		SkillLevel string `json:"skill_level"`
-	}
-
-	techResponses := []TechnologyResponse{}
-	for _, tech := range userTechs {
-		resp := TechnologyResponse{
-			Name:       tech.Edges.Technology.Name,
-			Slug:       tech.Edges.Technology.Slug,
-			SkillLevel: string(tech.SkillLevel),
-		}
-		techResponses = append(techResponses, resp)
-	}
-
-	userProjects, err := u.client.User.Query().
-		Where(user_ent.ID(user.ID)).
-		QueryOwnedProjects().
-		All(ctx)
+	userProjects, err := u.getUserProjects(ctx, user.Username)
 	if err != nil {
 		log.Error(ctx).Err(err).Msg("Failed to get user projects")
 		response.Error(w, errors.ErrInternalServerError)
 		return
-	}
-
-	type ProjectResponse struct {
-		ID          string  `json:"id"`
-		Name        string  `json:"name"`
-		Description *string `json:"description"`
-		LikeCount   int     `json:"like_count"`
-		StarCount   int     `json:"star_count"`
-		AddedAt     string  `json:"added_at"`
-	}
-
-	projectResponses := []ProjectResponse{}
-	for _, project := range userProjects {
-		resp := ProjectResponse{
-			ID:          project.ID,
-			Name:        project.Name,
-			Description: project.Description,
-			LikeCount:   project.LikeCount,
-			StarCount:   project.StarCount,
-			AddedAt:     project.CreateTime.Format("2006-01-02T15:04:05Z"),
-		}
-		projectResponses = append(projectResponses, resp)
 	}
 
 	type MeResponse struct {
@@ -107,14 +45,9 @@ func (u *UsersHandler) Me(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.JSON(w, http.StatusOK, "User fetched successfully", MeResponse{
-		UserData: UserData{
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			Username:  user.Username,
-		},
-		Technologies: techResponses,
-		Projects:     projectResponses,
+		UserData:     convertUserToUserData(user),
+		Technologies: convertUserTechnologiesToResponse(userTechs),
+		Projects:     convertProjectsToResponse(userProjects),
 	})
 }
 
@@ -123,10 +56,7 @@ func (u *UsersHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	username := chi.URLParam(r, "username")
 
-	user, err := u.client.User.Query().
-		Where(user_ent.Username(username)).
-		WithTechnologies().
-		First(ctx)
+	user, err := u.getUserByUsername(ctx, username)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			log.Error(ctx).Err(err).Msg("User not found")
@@ -134,6 +64,13 @@ func (u *UsersHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Error(ctx).Err(err).Msg("Failed to get user")
+		response.Error(w, errors.ErrInternalServerError)
+		return
+	}
+
+	userTechs, err := u.getUserTechnologies(ctx, user.ID)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user technologies")
 		response.Error(w, errors.ErrInternalServerError)
 		return
 	}
@@ -151,19 +88,12 @@ func (u *UsersHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	totalLikes, _ := user.QueryOwnedProjects().QueryLikes().Count(ctx)
 
 	var technologies []string
-	if user.Edges.Technologies != nil {
-		for _, tech := range user.Edges.Technologies {
-			technologies = append(technologies, tech.Slug)
-		}
+	for _, tech := range userTechs {
+		technologies = append(technologies, tech.Edges.Technology.Slug)
 	}
 
 	resp := ProfileResponse{
-		UserData: UserData{
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			Username:  user.Username,
-		},
+		UserData:     convertUserToUserData(user),
 		Bio:          user.Bio,
 		AvatarURL:    user.AvatarURL,
 		Technologies: technologies,
@@ -178,7 +108,6 @@ type AddTechnologyRequest struct {
 	TagSlug         string   `json:"tag_slug"`
 	SkillLevel      string   `json:"skill_level"`
 	YearsExperience *float64 `json:"years_experience"`
-	IsPrimary       *bool    `json:"is_primary"`
 }
 
 func (r AddTechnologyRequest) Validate() error {
@@ -251,17 +180,11 @@ func (u *UsersHandler) AddUserTechnology(w http.ResponseWriter, r *http.Request)
 		skillLevel = req.SkillLevel
 	}
 
-	isPrimary := false
-	if req.IsPrimary != nil {
-		isPrimary = *req.IsPrimary
-	}
-
 	_, err = u.client.UserTechnology.Create().
 		SetUserID(userID).
 		SetTechnologyID(tag.ID).
 		SetSkillLevel(usertechnology.SkillLevel(skillLevel)).
 		SetNillableYearsExperience(req.YearsExperience).
-		SetIsPrimary(isPrimary).
 		Save(ctx)
 	if err != nil {
 		log.Error(ctx).Err(err).Msg("Failed to create user technology")
@@ -277,42 +200,21 @@ func (u *UsersHandler) GetUserTechnologies(w http.ResponseWriter, r *http.Reques
 	ctx := r.Context()
 	username := chi.URLParam(r, "username")
 
-	user, err := u.client.User.Query().Where(user_ent.Username(username)).First(ctx)
+	user, err := u.getUserByUsername(ctx, username)
 	if err != nil {
 		log.Error(ctx).Err(err).Msg("Failed to get user")
 		response.Error(w, errors.ErrUserNotFound)
 		return
 	}
 
-	userTechs, err := u.client.UserTechnology.
-		Query().
-		Where(
-			usertechnology.UserID(user.ID),
-		).
-		WithTechnology(). // Load related Tag/Technology data
-		All(ctx)
+	userTechs, err := u.getUserTechnologies(ctx, user.ID)
 	if err != nil {
 		log.Error(ctx).Err(err).Msg("Failed to get user technologies")
 		response.Error(w, errors.ErrInternalServerError)
 		return
 	}
 
-	type TechnologyResponse struct {
-		Name       string `json:"name"`
-		Slug       string `json:"slug"`
-		SkillLevel string `json:"skill_level"`
-	}
-
-	var techResponses []TechnologyResponse
-	for _, tech := range userTechs {
-		resp := TechnologyResponse{
-			Name:       tech.Edges.Technology.Name,
-			Slug:       tech.Edges.Technology.Slug,
-			SkillLevel: string(tech.SkillLevel),
-		}
-		techResponses = append(techResponses, resp)
-	}
-
+	techResponses := convertUserTechnologiesToResponse(userTechs)
 	response.JSON(w, http.StatusOK, "User technologies retrieved successfully", techResponses)
 }
 
@@ -320,38 +222,14 @@ func (u *UsersHandler) GetUserProjects(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	username := chi.URLParam(r, "username")
 
-	userProjects, err := u.client.User.Query().
-		Where(user_ent.Username(username)).
-		QueryOwnedProjects().
-		All(ctx)
+	userProjects, err := u.getUserProjects(ctx, username)
 	if err != nil {
 		log.Error(ctx).Err(err).Msg("Failed to get user projects")
 		response.Error(w, errors.ErrInternalServerError)
 		return
 	}
 
-	type ProjectResponse struct {
-		ID          string  `json:"id"`
-		Name        string  `json:"name"`
-		Description *string `json:"description"`
-		LikeCount   int     `json:"like_count"`
-		StarCount   int     `json:"star_count"`
-		AddedAt     string  `json:"added_at"`
-	}
-
-	var projectResponses []ProjectResponse
-	for _, project := range userProjects {
-		resp := ProjectResponse{
-			ID:          project.ID,
-			Name:        project.Name,
-			Description: project.Description,
-			LikeCount:   project.LikeCount,
-			StarCount:   project.StarCount,
-			AddedAt:     project.CreateTime.Format("2006-01-02T15:04:05Z"),
-		}
-		projectResponses = append(projectResponses, resp)
-	}
-
+	projectResponses := convertProjectsToResponse(userProjects)
 	response.JSON(w, http.StatusOK, "User projects retrieved successfully", projectResponses)
 }
 
@@ -359,10 +237,7 @@ func (u *UsersHandler) GetUserLikes(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	username := chi.URLParam(r, "username")
 
-	userLikes, err := u.client.User.Query().
-		Where(user_ent.Username(username)).
-		QueryLikedProjects().
-		All(ctx)
+	userLikes, err := u.getUserLikedProjects(ctx, username)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			log.Error(ctx).Err(err).Msg("User not found")
@@ -374,37 +249,13 @@ func (u *UsersHandler) GetUserLikes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type ProjectResponse struct {
-		ID          string  `json:"id"`
-		Name        string  `json:"name"`
-		Description *string `json:"description"`
-		IsPublic    bool    `json:"is_public"`
-		LikeCount   int     `json:"like_count"`
-		StarCount   int     `json:"star_count"`
-		CreatedAt   string  `json:"created_at"`
-	}
-
-	var projectResponses []ProjectResponse
-	for _, project := range userLikes {
-		resp := ProjectResponse{
-			ID:          project.ID,
-			Name:        project.Name,
-			Description: project.Description,
-			IsPublic:    project.IsPublic,
-			LikeCount:   project.LikeCount,
-			StarCount:   project.StarCount,
-			CreatedAt:   project.CreateTime.Format("2006-01-02T15:04:05Z"),
-		}
-		projectResponses = append(projectResponses, resp)
-	}
-
+	projectResponses := convertProjectsToExtendedResponse(userLikes)
 	response.JSON(w, http.StatusOK, "User likes retrieved successfully", projectResponses)
 }
 
 type UpdateTechnologyRequest struct {
 	SkillLevel      *string  `json:"skill_level"`
 	YearsExperience *float64 `json:"years_experience"`
-	IsPrimary       *bool    `json:"is_primary"`
 }
 
 func (r UpdateTechnologyRequest) Validate() error {
@@ -470,9 +321,6 @@ func (u *UsersHandler) UpdateUserTechnology(w http.ResponseWriter, r *http.Reque
 	if req.YearsExperience != nil {
 		updateQuery = updateQuery.SetNillableYearsExperience(req.YearsExperience)
 	}
-	if req.IsPrimary != nil {
-		updateQuery = updateQuery.SetIsPrimary(*req.IsPrimary)
-	}
 
 	if _, err := updateQuery.Save(ctx); err != nil {
 		log.Error(ctx).Err(err).Msg("Failed to update user technology")
@@ -536,23 +384,4 @@ func (u *UsersHandler) normalizeSlug(input string) string {
 	slug = strings.ReplaceAll(slug, ".", "")
 	slug = strings.ReplaceAll(slug, "/", "")
 	return slug
-}
-
-func (u *UsersHandler) getPagination(r *http.Request) (limit, offset int) {
-	limit = 20
-	offset = 0
-
-	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
-		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 && l <= 100 {
-			limit = l
-		}
-	}
-
-	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
-		if o, err := strconv.Atoi(offsetStr); err == nil && o >= 0 {
-			offset = o
-		}
-	}
-
-	return limit, offset
 }

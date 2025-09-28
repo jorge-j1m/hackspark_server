@@ -105,20 +105,6 @@ func (_u *UserTechnologyUpdate) ClearYearsExperience() *UserTechnologyUpdate {
 	return _u
 }
 
-// SetIsPrimary sets the "is_primary" field.
-func (_u *UserTechnologyUpdate) SetIsPrimary(v bool) *UserTechnologyUpdate {
-	_u.mutation.SetIsPrimary(v)
-	return _u
-}
-
-// SetNillableIsPrimary sets the "is_primary" field if the given value is not nil.
-func (_u *UserTechnologyUpdate) SetNillableIsPrimary(v *bool) *UserTechnologyUpdate {
-	if v != nil {
-		_u.SetIsPrimary(*v)
-	}
-	return _u
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (_u *UserTechnologyUpdate) SetUser(v *User) *UserTechnologyUpdate {
 	return _u.SetUserID(v.ID)
@@ -234,9 +220,6 @@ func (_u *UserTechnologyUpdate) sqlSave(ctx context.Context) (_node int, err err
 	}
 	if _u.mutation.YearsExperienceCleared() {
 		_spec.ClearField(usertechnology.FieldYearsExperience, field.TypeFloat64)
-	}
-	if value, ok := _u.mutation.IsPrimary(); ok {
-		_spec.SetField(usertechnology.FieldIsPrimary, field.TypeBool, value)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -391,20 +374,6 @@ func (_u *UserTechnologyUpdateOne) ClearYearsExperience() *UserTechnologyUpdateO
 	return _u
 }
 
-// SetIsPrimary sets the "is_primary" field.
-func (_u *UserTechnologyUpdateOne) SetIsPrimary(v bool) *UserTechnologyUpdateOne {
-	_u.mutation.SetIsPrimary(v)
-	return _u
-}
-
-// SetNillableIsPrimary sets the "is_primary" field if the given value is not nil.
-func (_u *UserTechnologyUpdateOne) SetNillableIsPrimary(v *bool) *UserTechnologyUpdateOne {
-	if v != nil {
-		_u.SetIsPrimary(*v)
-	}
-	return _u
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (_u *UserTechnologyUpdateOne) SetUser(v *User) *UserTechnologyUpdateOne {
 	return _u.SetUserID(v.ID)
@@ -550,9 +519,6 @@ func (_u *UserTechnologyUpdateOne) sqlSave(ctx context.Context) (_node *UserTech
 	}
 	if _u.mutation.YearsExperienceCleared() {
 		_spec.ClearField(usertechnology.FieldYearsExperience, field.TypeFloat64)
-	}
-	if value, ok := _u.mutation.IsPrimary(); ok {
-		_spec.SetField(usertechnology.FieldIsPrimary, field.TypeBool, value)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

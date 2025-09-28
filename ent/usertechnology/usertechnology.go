@@ -27,8 +27,6 @@ const (
 	FieldSkillLevel = "skill_level"
 	// FieldYearsExperience holds the string denoting the years_experience field in the database.
 	FieldYearsExperience = "years_experience"
-	// FieldIsPrimary holds the string denoting the is_primary field in the database.
-	FieldIsPrimary = "is_primary"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeTechnology holds the string denoting the technology edge name in mutations.
@@ -60,7 +58,6 @@ var Columns = []string{
 	FieldTechnologyID,
 	FieldSkillLevel,
 	FieldYearsExperience,
-	FieldIsPrimary,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -84,8 +81,6 @@ var (
 	UserIDValidator func(string) error
 	// TechnologyIDValidator is a validator for the "technology_id" field. It is called by the builders before save.
 	TechnologyIDValidator func(string) error
-	// DefaultIsPrimary holds the default value on creation for the "is_primary" field.
-	DefaultIsPrimary bool
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() string
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -155,11 +150,6 @@ func BySkillLevel(opts ...sql.OrderTermOption) OrderOption {
 // ByYearsExperience orders the results by the years_experience field.
 func ByYearsExperience(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldYearsExperience, opts...).ToFunc()
-}
-
-// ByIsPrimary orders the results by the is_primary field.
-func ByIsPrimary(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIsPrimary, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.

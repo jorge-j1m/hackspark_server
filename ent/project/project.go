@@ -22,8 +22,6 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldIsPublic holds the string denoting the is_public field in the database.
-	FieldIsPublic = "is_public"
 	// FieldLikeCount holds the string denoting the like_count field in the database.
 	FieldLikeCount = "like_count"
 	// FieldStarCount holds the string denoting the star_count field in the database.
@@ -80,7 +78,6 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldName,
 	FieldDescription,
-	FieldIsPublic,
 	FieldLikeCount,
 	FieldStarCount,
 }
@@ -124,8 +121,6 @@ var (
 	UpdateDefaultUpdateTime func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
-	// DefaultIsPublic holds the default value on creation for the "is_public" field.
-	DefaultIsPublic bool
 	// DefaultLikeCount holds the default value on creation for the "like_count" field.
 	DefaultLikeCount int
 	// DefaultStarCount holds the default value on creation for the "star_count" field.
@@ -162,11 +157,6 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
-}
-
-// ByIsPublic orders the results by the is_public field.
-func ByIsPublic(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIsPublic, opts...).ToFunc()
 }
 
 // ByLikeCount orders the results by the like_count field.

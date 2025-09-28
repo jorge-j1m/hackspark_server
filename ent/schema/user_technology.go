@@ -41,8 +41,6 @@ func (UserTechnology) Fields() []ent.Field {
 		field.Float("years_experience").
 			Optional().
 			Nillable(),
-		field.Bool("is_primary").
-			Default(false),
 	}
 }
 
@@ -67,6 +65,5 @@ func (UserTechnology) Indexes() []ent.Index {
 			Unique(),
 		index.Fields("technology_id"),
 		index.Fields("skill_level"),
-		index.Fields("is_primary"),
 	}
 }

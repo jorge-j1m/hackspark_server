@@ -23,7 +23,6 @@ import (
 type CreateProjectRequest struct {
 	Name        string   `json:"name"`
 	Description *string  `json:"description"`
-	IsPublic    *bool    `json:"is_public"`
 	Tags        []string `json:"tags"`
 }
 
@@ -43,7 +42,6 @@ func (r CreateProjectRequest) Validate() error {
 type UpdateProjectRequest struct {
 	Name        *string  `json:"name"`
 	Description *string  `json:"description"`
-	IsPublic    *bool    `json:"is_public"`
 	Tags        []string `json:"tags"`
 }
 
@@ -61,7 +59,6 @@ type ProjectResponse struct {
 	ID          string   `json:"id"`
 	Name        string   `json:"name"`
 	Description *string  `json:"description"`
-	IsPublic    bool     `json:"is_public"`
 	LikeCount   int      `json:"like_count"`
 	StarCount   int      `json:"star_count"`
 	Tags        []string `json:"tags"`
@@ -95,15 +92,9 @@ func (h *ProjectsHandler) CreateProject(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	isPublic := true
-	if req.IsPublic != nil {
-		isPublic = *req.IsPublic
-	}
-
 	project, err := h.client.Project.Create().
 		SetName(req.Name).
 		SetNillableDescription(req.Description).
-		SetIsPublic(isPublic).
 		SetOwnerID(userID).
 		Save(ctx)
 	if err != nil {
@@ -199,9 +190,6 @@ func (h *ProjectsHandler) UpdateProject(w http.ResponseWriter, r *http.Request) 
 	if req.Description != nil {
 		updateQuery = updateQuery.SetNillableDescription(req.Description)
 	}
-	if req.IsPublic != nil {
-		updateQuery = updateQuery.SetIsPublic(*req.IsPublic)
-	}
 
 	if _, err := updateQuery.Save(ctx); err != nil {
 		log.Error(ctx).Err(err).Msg("Failed to update project")
@@ -273,7 +261,6 @@ func (h *ProjectsHandler) ListProjects(w http.ResponseWriter, r *http.Request) {
 	limit, offset := h.getPagination(r)
 
 	query := h.client.Project.Query().
-		Where(project.IsPublic(true)).
 		WithOwner().
 		WithTags().
 		Limit(limit).
@@ -324,7 +311,6 @@ func (h *ProjectsHandler) buildProjectResponse(p *ent.Project) ProjectResponse {
 		ID:          p.ID,
 		Name:        p.Name,
 		Description: p.Description,
-		IsPublic:    p.IsPublic,
 		LikeCount:   p.LikeCount,
 		StarCount:   p.StarCount,
 		CreatedAt:   p.CreateTime.Format("2006-01-02T15:04:05Z"),

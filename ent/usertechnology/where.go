@@ -90,11 +90,6 @@ func YearsExperience(v float64) predicate.UserTechnology {
 	return predicate.UserTechnology(sql.FieldEQ(FieldYearsExperience, v))
 }
 
-// IsPrimary applies equality check predicate on the "is_primary" field. It's identical to IsPrimaryEQ.
-func IsPrimary(v bool) predicate.UserTechnology {
-	return predicate.UserTechnology(sql.FieldEQ(FieldIsPrimary, v))
-}
-
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.UserTechnology {
 	return predicate.UserTechnology(sql.FieldEQ(FieldCreateTime, v))
@@ -373,16 +368,6 @@ func YearsExperienceIsNil() predicate.UserTechnology {
 // YearsExperienceNotNil applies the NotNil predicate on the "years_experience" field.
 func YearsExperienceNotNil() predicate.UserTechnology {
 	return predicate.UserTechnology(sql.FieldNotNull(FieldYearsExperience))
-}
-
-// IsPrimaryEQ applies the EQ predicate on the "is_primary" field.
-func IsPrimaryEQ(v bool) predicate.UserTechnology {
-	return predicate.UserTechnology(sql.FieldEQ(FieldIsPrimary, v))
-}
-
-// IsPrimaryNEQ applies the NEQ predicate on the "is_primary" field.
-func IsPrimaryNEQ(v bool) predicate.UserTechnology {
-	return predicate.UserTechnology(sql.FieldNEQ(FieldIsPrimary, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

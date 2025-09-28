@@ -36,8 +36,6 @@ func (Project) Fields() []ent.Field {
 		field.String("description").
 			Optional().
 			Nillable(),
-		field.Bool("is_public").
-			Default(true),
 		field.Int("like_count").
 			Default(0),
 		field.Int("star_count").
@@ -63,7 +61,6 @@ func (Project) Edges() []ent.Edge {
 // Indexes of the Project.
 func (Project) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("is_public"),
 		index.Fields("like_count"),
 		index.Edges("owner"),
 	}

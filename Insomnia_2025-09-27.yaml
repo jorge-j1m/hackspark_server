@@ -398,7 +398,6 @@ collection:
             {
             	"name": "Awesome React App",
             	"description": "A modern web application built with React and TypeScript",
-            	"is_public": true,
             	"tags": ["react", "typescript", "tailwindcss", "nextjs"]
             }
         headers:
@@ -456,7 +455,6 @@ collection:
             {
             	"name": "Updated Project Name",
             	"description": "Updated description with more details",
-            	"is_public": true
             }
         headers:
           - name: Content-Type

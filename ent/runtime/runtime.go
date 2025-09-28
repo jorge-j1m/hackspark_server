@@ -67,16 +67,12 @@ func init() {
 	projectDescName := projectFields[1].Descriptor()
 	// project.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	project.NameValidator = projectDescName.Validators[0].(func(string) error)
-	// projectDescIsPublic is the schema descriptor for is_public field.
-	projectDescIsPublic := projectFields[3].Descriptor()
-	// project.DefaultIsPublic holds the default value on creation for the is_public field.
-	project.DefaultIsPublic = projectDescIsPublic.Default.(bool)
 	// projectDescLikeCount is the schema descriptor for like_count field.
-	projectDescLikeCount := projectFields[4].Descriptor()
+	projectDescLikeCount := projectFields[3].Descriptor()
 	// project.DefaultLikeCount holds the default value on creation for the like_count field.
 	project.DefaultLikeCount = projectDescLikeCount.Default.(int)
 	// projectDescStarCount is the schema descriptor for star_count field.
-	projectDescStarCount := projectFields[5].Descriptor()
+	projectDescStarCount := projectFields[4].Descriptor()
 	// project.DefaultStarCount holds the default value on creation for the star_count field.
 	project.DefaultStarCount = projectDescStarCount.Default.(int)
 	// projectDescID is the schema descriptor for id field.
@@ -246,10 +242,6 @@ func init() {
 	usertechnologyDescTechnologyID := usertechnologyFields[2].Descriptor()
 	// usertechnology.TechnologyIDValidator is a validator for the "technology_id" field. It is called by the builders before save.
 	usertechnology.TechnologyIDValidator = usertechnologyDescTechnologyID.Validators[0].(func(string) error)
-	// usertechnologyDescIsPrimary is the schema descriptor for is_primary field.
-	usertechnologyDescIsPrimary := usertechnologyFields[5].Descriptor()
-	// usertechnology.DefaultIsPrimary holds the default value on creation for the is_primary field.
-	usertechnology.DefaultIsPrimary = usertechnologyDescIsPrimary.Default.(bool)
 	// usertechnologyDescID is the schema descriptor for id field.
 	usertechnologyDescID := usertechnologyFields[0].Descriptor()
 	// usertechnology.DefaultID holds the default value on creation for the id field.

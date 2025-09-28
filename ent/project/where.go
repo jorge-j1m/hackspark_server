@@ -85,11 +85,6 @@ func Description(v string) predicate.Project {
 	return predicate.Project(sql.FieldEQ(FieldDescription, v))
 }
 
-// IsPublic applies equality check predicate on the "is_public" field. It's identical to IsPublicEQ.
-func IsPublic(v bool) predicate.Project {
-	return predicate.Project(sql.FieldEQ(FieldIsPublic, v))
-}
-
 // LikeCount applies equality check predicate on the "like_count" field. It's identical to LikeCountEQ.
 func LikeCount(v int) predicate.Project {
 	return predicate.Project(sql.FieldEQ(FieldLikeCount, v))
@@ -318,16 +313,6 @@ func DescriptionEqualFold(v string) predicate.Project {
 // DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
 func DescriptionContainsFold(v string) predicate.Project {
 	return predicate.Project(sql.FieldContainsFold(FieldDescription, v))
-}
-
-// IsPublicEQ applies the EQ predicate on the "is_public" field.
-func IsPublicEQ(v bool) predicate.Project {
-	return predicate.Project(sql.FieldEQ(FieldIsPublic, v))
-}
-
-// IsPublicNEQ applies the NEQ predicate on the "is_public" field.
-func IsPublicNEQ(v bool) predicate.Project {
-	return predicate.Project(sql.FieldNEQ(FieldIsPublic, v))
 }
 
 // LikeCountEQ applies the EQ predicate on the "like_count" field.

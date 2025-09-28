@@ -72,20 +72,6 @@ func (_c *ProjectCreate) SetNillableDescription(v *string) *ProjectCreate {
 	return _c
 }
 
-// SetIsPublic sets the "is_public" field.
-func (_c *ProjectCreate) SetIsPublic(v bool) *ProjectCreate {
-	_c.mutation.SetIsPublic(v)
-	return _c
-}
-
-// SetNillableIsPublic sets the "is_public" field if the given value is not nil.
-func (_c *ProjectCreate) SetNillableIsPublic(v *bool) *ProjectCreate {
-	if v != nil {
-		_c.SetIsPublic(*v)
-	}
-	return _c
-}
-
 // SetLikeCount sets the "like_count" field.
 func (_c *ProjectCreate) SetLikeCount(v int) *ProjectCreate {
 	_c.mutation.SetLikeCount(v)
@@ -242,10 +228,6 @@ func (_c *ProjectCreate) defaults() {
 		v := project.DefaultUpdateTime()
 		_c.mutation.SetUpdateTime(v)
 	}
-	if _, ok := _c.mutation.IsPublic(); !ok {
-		v := project.DefaultIsPublic
-		_c.mutation.SetIsPublic(v)
-	}
 	if _, ok := _c.mutation.LikeCount(); !ok {
 		v := project.DefaultLikeCount
 		_c.mutation.SetLikeCount(v)
@@ -275,9 +257,6 @@ func (_c *ProjectCreate) check() error {
 		if err := project.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Project.name": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.IsPublic(); !ok {
-		return &ValidationError{Name: "is_public", err: errors.New(`ent: missing required field "Project.is_public"`)}
 	}
 	if _, ok := _c.mutation.LikeCount(); !ok {
 		return &ValidationError{Name: "like_count", err: errors.New(`ent: missing required field "Project.like_count"`)}
@@ -343,10 +322,6 @@ func (_c *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(project.FieldDescription, field.TypeString, value)
 		_node.Description = &value
-	}
-	if value, ok := _c.mutation.IsPublic(); ok {
-		_spec.SetField(project.FieldIsPublic, field.TypeBool, value)
-		_node.IsPublic = value
 	}
 	if value, ok := _c.mutation.LikeCount(); ok {
 		_spec.SetField(project.FieldLikeCount, field.TypeInt, value)
