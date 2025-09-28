@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jorge-j1m/hackspark_server/ent"
 	"github.com/jorge-j1m/hackspark_server/ent/tag"
-	"github.com/jorge-j1m/hackspark_server/ent/user"
+	user_ent "github.com/jorge-j1m/hackspark_server/ent/user"
 	"github.com/jorge-j1m/hackspark_server/ent/usertechnology"
 	log "github.com/jorge-j1m/hackspark_server/internal/infrastructure/logger"
 	"github.com/jorge-j1m/hackspark_server/internal/interfaces/http/middleware"
@@ -39,7 +39,83 @@ func (u *UsersHandler) Me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.JSON(w, http.StatusOK, "User fetched successfully", convertUserToResponse(user))
+	userTechs, err := u.client.UserTechnology.
+		Query().
+		Where(
+			usertechnology.UserID(user.ID),
+		).
+		WithTechnology(). // Load related Tag/Technology data
+		All(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user technologies")
+		response.Error(w, errors.ErrInternalServerError)
+		return
+	}
+
+	type TechnologyResponse struct {
+		Name       string `json:"name"`
+		Slug       string `json:"slug"`
+		SkillLevel string `json:"skill_level"`
+	}
+
+	techResponses := []TechnologyResponse{}
+	for _, tech := range userTechs {
+		resp := TechnologyResponse{
+			Name:       tech.Edges.Technology.Name,
+			Slug:       tech.Edges.Technology.Slug,
+			SkillLevel: string(tech.SkillLevel),
+		}
+		techResponses = append(techResponses, resp)
+	}
+
+	userProjects, err := u.client.User.Query().
+		Where(user_ent.ID(user.ID)).
+		QueryOwnedProjects().
+		All(ctx)
+	if err != nil {
+		log.Error(ctx).Err(err).Msg("Failed to get user projects")
+		response.Error(w, errors.ErrInternalServerError)
+		return
+	}
+
+	type ProjectResponse struct {
+		ID          string  `json:"id"`
+		Name        string  `json:"name"`
+		Description *string `json:"description"`
+		LikeCount   int     `json:"like_count"`
+		StarCount   int     `json:"star_count"`
+		AddedAt     string  `json:"added_at"`
+	}
+
+	projectResponses := []ProjectResponse{}
+	for _, project := range userProjects {
+		resp := ProjectResponse{
+			ID:          project.ID,
+			Name:        project.Name,
+			Description: project.Description,
+			LikeCount:   project.LikeCount,
+			StarCount:   project.StarCount,
+			AddedAt:     project.CreateTime.Format("2006-01-02T15:04:05Z"),
+		}
+		projectResponses = append(projectResponses, resp)
+	}
+
+	type MeResponse struct {
+		UserData
+		Technologies []TechnologyResponse `json:"technologies"`
+		Projects     []ProjectResponse    `json:"projects"`
+	}
+
+	response.JSON(w, http.StatusOK, "User fetched successfully", MeResponse{
+		UserData: UserData{
+			Email:     user.Email,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			Username:  user.Username,
+		},
+		Technologies: techResponses,
+		Projects:     projectResponses,
+	})
 }
 
 // General use handler for getting someone else's profile by username
@@ -48,7 +124,7 @@ func (u *UsersHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
 	user, err := u.client.User.Query().
-		Where(user.Username(username)).
+		Where(user_ent.Username(username)).
 		WithTechnologies().
 		First(ctx)
 	if err != nil {
@@ -201,7 +277,7 @@ func (u *UsersHandler) GetUserTechnologies(w http.ResponseWriter, r *http.Reques
 	ctx := r.Context()
 	username := chi.URLParam(r, "username")
 
-	user, err := u.client.User.Query().Where(user.Username(username)).First(ctx)
+	user, err := u.client.User.Query().Where(user_ent.Username(username)).First(ctx)
 	if err != nil {
 		log.Error(ctx).Err(err).Msg("Failed to get user")
 		response.Error(w, errors.ErrUserNotFound)
@@ -245,7 +321,7 @@ func (u *UsersHandler) GetUserProjects(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
 	userProjects, err := u.client.User.Query().
-		Where(user.Username(username)).
+		Where(user_ent.Username(username)).
 		QueryOwnedProjects().
 		All(ctx)
 	if err != nil {
@@ -284,7 +360,7 @@ func (u *UsersHandler) GetUserLikes(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
 	userLikes, err := u.client.User.Query().
-		Where(user.Username(username)).
+		Where(user_ent.Username(username)).
 		QueryLikedProjects().
 		All(ctx)
 	if err != nil {
