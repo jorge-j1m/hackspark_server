@@ -117,7 +117,7 @@ func (h *ProjectsHandler) CreateProject(w http.ResponseWriter, r *http.Request) 
 	}
 
 	log.Info(ctx).Msgf("Project created successfully: %s", project.ID)
-	response.JSON(w, http.StatusCreated, "Project created successfully", projectResp)
+	response.JSON(w, http.StatusOK, "Project created successfully", projectResp)
 }
 
 func (h *ProjectsHandler) GetProject(w http.ResponseWriter, r *http.Request) {
